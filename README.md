@@ -17,6 +17,18 @@ This project builds a production-ready pipeline for predicting credit default ri
 EDA  ›  Feature Engineering  ›  LightGBM Training  ›  SHAP Analysis
 ```
 
+## Stages
+
+### 1. Exploratory Data Analysis
+
+Univariate and bivariate analysis of demographics, payment history, credit limits, and bill amounts. Includes:
+
+- Class imbalance diagnosis
+- Missing value patterns
+- Outlier detection via IQR and visual inspection
+- Correlation heatmaps and target-stratified distributions
+
+
 ## Summary of the project
 Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. 
 This competition requires participants to improve on the state of the art in credit scoring, by predicting the probability that somebody will experience financial distress in the next two years.
