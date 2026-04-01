@@ -1,5 +1,21 @@
-# 🏦 Credit Risk Assessment Project
-**Python | LightGBM | Statistical Testing | SHAP | Bias Mitigation | Parameter Hypertuning**
+# 🏦 Credit Default Prediction
+
+> End-to-end ML pipeline · Binary classification · LightGBM + SHAP
+
+![Python](https://img.shields.io/badge/Python-3.10-blue) ![LightGBM](https://img.shields.io/badge/LightGBM-4.x-teal) ![SHAP](https://img.shields.io/badge/SHAP-0.44-purple) ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange)
+
+---
+
+## Overview
+
+This project builds a production-ready pipeline for predicting credit default risk from structured financial data. It covers the full lifecycle — from raw data exploration and feature engineering, through gradient boosting model training, to explainability analysis using SHAP values. The goal is to support lending decisions by identifying high-risk applicants while maintaining interpretability for regulators and business stakeholders.
+
+---
+
+## Pipeline
+```
+EDA  ›  Feature Engineering  ›  LightGBM Training  ›  SHAP Analysis
+```
 
 ## Summary of the project
 Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. 
