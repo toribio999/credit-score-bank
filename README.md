@@ -1,6 +1,6 @@
-# 🏦 Credit Default Prediction
+ # 🏦 Credit Default Prediction
 
-> Proyecto de ML end-to-end · Clasificación Binaria · Limpieza de datos · Feature Engineering · XGBoost + SHAP + LIME 
+> Proyecto de ML end-to-end · Clasificación Binaria · Limpieza de datos · Feature Engineering · Regresión Logística · XGBoost + SHAP + LIME 
 
 ![Python](https://img.shields.io/badge/Python-3.14-blue) ![Xgboost](https://img.shields.io/badge/XGBoost-1.x-teal) ![SHAP](https://img.shields.io/badge/SHAP-0.44-purple) ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange) ![LIME](https://img.shields.io/badge/LIME-0.2.2-orange)
 
@@ -8,39 +8,16 @@
 
 ## Overview
 
-This project builds a production-ready pipeline for predicting credit default risk from structured financial data. It covers the full lifecycle — from raw data exploration and feature engineering, through gradient boosting model training, to explainability analysis using SHAP values. The goal is to support lending decisions by identifying high-risk applicants while maintaining interpretability for regulators and business stakeholders.
+Este proyecto desarrolla un sistema integral y listo para producción para la predicción del riesgo de impago crediticio a partir de datos financieros estructurados.En él, se abarca todo el ciclo de vida del modelo, desde el análisis exploratorio de datos y featuring engineering hasta el entrenamiento de modelos de machine learning y el análisis de explicabilidad mediante valores SHAP.Se evaluaron distintos enfoques, como Regresión Logística y XGBoost, abordando de forma específica el fuerte desbalanceo del conjunto de datos (93%-7%) mediante técnicas adecuadas para este tipo de problemática. XGBoost fue finalmente seleccionado por su sólido rendimiento predictivo y su capacidad para manejar eficazmente este escenario. El modelo final obtenido permite estimar de manera fiable la probabilidad de que un cliente incurra en dificultades financieras en un horizonte de dos años, contribuyendo así a mejorar la toma de decisiones en concesión de crédito. 
 
----
+## 🎯 Main Objectives:
+
+
 
 ## Pipeline
 ```
 Limpieza de datos > EDA  ›  Feature Engineering  ›  Entrenamiento y evaluación de los modelos  ›  SHAP Analysis
 ```
-
-## Stages
-
-### 1. Exploratory Data Analysis
-
-Univariate and bivariate analysis of demographics, payment history, credit limits, and bill amounts. Includes:
-
-- Class imbalance diagnosis
-- Missing value patterns
-- Outlier detection via IQR and visual inspection
-- Correlation heatmaps and target-stratified distributions
-
-
-## Summary of the project
-Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. 
-This competition requires participants to improve on the state of the art in credit scoring, by predicting the probability that somebody will experience financial distress in the next two years.
-The goal of this competition is to build a model that borrowers can use to help make the best financial decisions
-This project develops an end-to-end credit risk prediction system using machine learning to identify potential loan defaults. Multiple models including Logistic Regression, Random Forest, and XGBoost were evaluated, with XGBoost selected as the final model based on balanced predictive performance and robustness on imbalanced data. The model achieved strong classification performance while incorporating explainability through SHAP values and fairness evaluation across demographic groups. 
-Fairness mitigation techniques improved disparate impact with minimal performance trade-off, demonstrating a production-oriented approach to responsible credit risk modelling.
-
-## 🎯 Main Objectives:
-- Build predictive model for loan default classification (100,000+ applications)
-- Build predictive model for loan default classification (100,000+ applications)
-- Build predictive model for loan default classification (100,000+ applications)
-- Build predictive model for loan default classification (100,000+ applications)
 
 
 ## 📊 Dataset
@@ -60,3 +37,16 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 | NumberRealEstateLoansOrLines         | Hipotecas        | Número de préstamos o líneas de crédito inmobiliario                 |
 | NumberOfTime60-89DaysPastDueNotWorse | Retrasos 2 Meses | Número de veces que el prestatario tuvo un retraso de 2 meses        |
 | NumberOfDependents                   | Tamaño Familiar  | Número de dependientes (hijos, cónyuge u otros)                      |
+
+
+
+## Stages
+
+### 1. Exploratory Data Analysis
+
+Univariate and bivariate analysis of demographics, payment history, credit limits, and bill amounts. Includes:
+
+- Class imbalance diagnosis
+- Missing value patterns
+- Outlier detection via IQR and visual inspection
+- Correlation heatmaps and target-stratified distributions
