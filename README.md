@@ -1,8 +1,8 @@
 # 🏦 Credit Default Prediction
 
-> End-to-end ML pipeline · Binary classification · LightGBM + SHAP
+> Proyecto de ML end-to-end · Clasificación Binaria · Limpieza de datos · Feature Engineering · XGBoost + SHAP + LIME 
 
-![Python](https://img.shields.io/badge/Python-3.10-blue) ![LightGBM](https://img.shields.io/badge/LightGBM-4.x-teal) ![SHAP](https://img.shields.io/badge/SHAP-0.44-purple) ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange)
+![Python](https://img.shields.io/badge/Python-3.14-blue) ![Xgboost](https://img.shields.io/badge/XGBoost-1.x-teal) ![SHAP](https://img.shields.io/badge/SHAP-0.44-purple) ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange) ![LIME](https://img.shields.io/badge/LIME-0.2.2-orange)
 
 ---
 
@@ -14,7 +14,7 @@ This project builds a production-ready pipeline for predicting credit default ri
 
 ## Pipeline
 ```
-EDA  ›  Feature Engineering  ›  LightGBM Training  ›  SHAP Analysis
+Limpieza de datos > EDA  ›  Feature Engineering  ›  Entrenamiento y evaluación de los modelos  ›  SHAP Analysis
 ```
 
 ## Stages
@@ -44,19 +44,19 @@ Fairness mitigation techniques improved disparate impact with minimal performanc
 
 
 ## 📊 Dataset
-The following project has been developed using the "Give Me Some Credit" dataset from Kaggle.
-It contains financial and behavioral attributes of borrowers. Each row represents a person applying for credit.
+El presente proyecto ha sido desarrollado utilizando el presente conjunto de datos:  '[Give me some credit](https://www.kaggle.com/competitions/GiveMeSomeCredit/data)'.
+Este conjunto de datos incluye información financiera y de comportamiento de los solicitantes de crédito. Cada fila representa a una persona que solicita un préstamo e incluye atributos como ingresos, deudas, historial de pagos, número de cuentas abiertas y tamaño de la familia. Estos datos permiten analizar el riesgo de incumplimiento y predecir la probabilidad de que un solicitante no pague su deuda.
 
-| Original Column Name                               | Simple Name       | Description                                                                 |
-|----------------------------------------------------|-----------------|-----------------------------------------------------------------------------|
-| SeriousDlqin2yrs                                   | Defaulted       | Whether the person failed to pay their debt for 90+ days (1 = Yes, 0 = No) |
-| RevolvingUtilizationOfUnsecuredLines              | Credit Usage %  | Percentage of available credit currently being used                        |
-| age                                                | Age             | Borrower's age in years                                                     |
-| NumberOfTime30-59DaysPastDueNotWorse              | 1-Month Lates   | Number of times the borrower was 1 month past due                           |
-| DebtRatio                                          | Debt vs Income  | Monthly debt and expenses divided by total income                            |
-| MonthlyIncome                                      | Monthly Income  | Borrower's gross monthly income                                             |
-| NumberOfOpenCreditLinesAndLoans                   | Open Accounts   | Total number of active credit cards and loans                               |
-| NumberOfTimes90DaysLate                            | 3-Month Lates   | Number of times the borrower was 3+ months past due                          |
-| NumberRealEstateLoansOrLines                       | Mortgages       | Number of real estate loans or lines                                        |
-| NumberOfTime60-89DaysPastDueNotWorse              | 2-Month Lates   | Number of times the borrower was 2 months past due                           |
-| NumberOfDependents                                 | Family Size     | Number of dependents (children, spouse, or others)                          |
+| Columnas         | Nombre Simplificado   | Descripción                                                          |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------- |
+| SeriousDlqin2yrs                     | Moroso           | Variable binaria que indica si la persona no pagó su deuda por más de 90 días (1 = Sí, 0 = No)   |
+| RevolvingUtilizationOfUnsecuredLines | Uso de Crédito % | Porcentaje del crédito disponible que se está utilizando actualmente |
+| age                                  | Edad             | Edad del prestatario en años                                         |
+| NumberOfTime30-59DaysPastDueNotWorse | Retrasos 1 Mes   | Número de veces que el prestatario tuvo un retraso de 1 mes          |
+| DebtRatio                            | Deuda vs Ingreso | Deuda mensual y gastos divididos por el ingreso total                |
+| MonthlyIncome                        | Ingreso Mensual  | Ingreso mensual bruto del prestatario                                |
+| NumberOfOpenCreditLinesAndLoans      | Cuentas Abiertas | Número total de tarjetas de crédito y préstamos activos              |
+| NumberOfTimes90DaysLate              | Retrasos 3 Meses | Número de veces que el prestatario tuvo un retraso de 3 o más meses  |
+| NumberRealEstateLoansOrLines         | Hipotecas        | Número de préstamos o líneas de crédito inmobiliario                 |
+| NumberOfTime60-89DaysPastDueNotWorse | Retrasos 2 Meses | Número de veces que el prestatario tuvo un retraso de 2 meses        |
+| NumberOfDependents                   | Tamaño Familiar  | Número de dependientes (hijos, cónyuge u otros)                      |
