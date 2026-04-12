@@ -25,7 +25,7 @@ Limpieza de datos > EDA  ›  Feature Engineering  ›  Entrenamiento y evaluaci
 
 
 ## 📊 Dataset
-El presente proyecto ha sido desarrollado utilizando el presente conjunto de datos:  '[Give me some credit](https://www.kaggle.com/competitions/GiveMeSomeCredit/data)'.
+El presente proyecto ha sido desarrollado utilizando el conjunto de datos:  '[Give me some credit](https://www.kaggle.com/competitions/GiveMeSomeCredit/data)'.
 Este conjunto de datos incluye información financiera y de comportamiento de los solicitantes de crédito. Cada fila representa a una persona que solicita un préstamo e incluye atributos como ingresos, deudas, historial de pagos, número de cuentas abiertas y tamaño de la familia. Estos datos permiten analizar el riesgo de incumplimiento y predecir la probabilidad de que un solicitante no pague su deuda.
 
 | Columnas         | Nombre Simplificado   | Descripción                                                          |
@@ -56,13 +56,35 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 
 ![Descripción](images/missing.png)
 
-- Como se puede comprobar por el presente gráfico, las variable MontlyIncome y NumberOfDependents son las únicas que presentan missing values. 
+- Como se puede comprobar por el presente gráfico, las variable MontlyIncome y NumberOfDependents son las únicas que presentan missing values.
 
-- Para la variable MontlyIncome, debido a la presencia de outliers...
+- En primera instancia trataremos la variable NumberOfDependents, ya que es más intuitiva. Para entenderla veámos la distribución de sus valores:
+  
+Dependientes | Nº de clientes
+-------------|---------------
+0            | 86,705
+1            | 26,292
+2            | 19,501
+3            | 9,479
+4            | 2,860
+5            | 745
+6            | 158
+7            | 51
+8            | 24
+9            | 5
+10           | 5
+13           | 1
+20           | 1
+
+- La distribución de la variable muestra que la gran mayoría de los clientes presentan entre 0 y 2 dependientes, concentrando así la mayor parte de las observaciones. Asimismo, se identifican valores atípicos claros (como 10, 13 y 20 dependientes), cuya frecuencia es extremadamente baja y, por tanto, poco representativa del conjunto de datos. En consecuencia, se ha optado por eliminar estos outliers para evitar distorsiones en el análisis. Para la imputación de valores faltantes en el resto de observaciones, se ha utilizado la moda (0), al ser el valor más frecuente y representativo de la distribución.
+ 
+- La variable Montly Income, por otro lado, es más compleja de tratar, esta presenta un 19,77% y una distribución sesgada a la derecha, con algunos outliers extremos.
+- Examianamos la distribución de la variable segmentada según la condición de morosidad del cliente, habiendo recortado los outliers más evidentes:
 
 ![Descripción](images/Income-Default.png)
 
-- Como existen ciertas diferencias en la distribución de la variable dependiendo de si el sujeto ha incurrido en Default o no, se ha considerado oportuno realizar el rellenado utilizando la mediana perteneciente a cada categoría, y no la general.
+
+- Dado que la distribución de la variable difiere entre individuos en situación de default y aquellos que no lo están, imputar los valores faltantes utilizando una medida global podría introducir sesgos y distorsionar la relación con la variable objetivo. Por ello, se opta por una imputación más robusta basada en la mediana específica de cada grupo, preservando mejor la estructura real de los datos. Adicionalmente, hemos aplicado una transformación logarítmica, lo que nos permite reducir la asimetría y el efecto de valores extremos, favoreciendo una distribución más estable y adecuada para el modelado.
   
 ```python
 # Realizamos primeramente una transformación logarítmica
@@ -83,3 +105,28 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 - Missing value patterns
 - Outlier detection via IQR and visual inspection
 - Correlation heatmaps and target-stratified distributions
+
+
+### 🧩 Ingeniería de variables (Feature Engineering)
+
+-Esta sección resume las variables derivadas creadas con el objetivo de mejorar la capacidad predictiva del modelo de riesgo de crédito. Las transformaciones se centran en capturar la capacidad de pago, el comportamiento histórico del cliente y su segmentación.
+
+
+
+Esta sección resume las variables derivadas creadas con el objetivo de mejorar la capacidad predictiva del modelo de riesgo de crédito.
+
+| Variable                | Tipo        | Descripción                                                                 | Intuición de riesgo                          |
+| ----------------------- | ----------- | --------------------------------------------------------------------------- | -------------------------------------------- |
+| `income_per_dependent`  | Numérica    | Ingreso mensual dividido por número de dependientes (+1 para evitar división por cero) | Menor valor → mayor carga financiera         |
+| `utilization_capped`    | Numérica    | Utilización de crédito acotada entre 0 y 1                                  | Reduce el impacto de valores extremos        |
+| `CreditHistoryLength`   | Numérica    | Edad - 18 (aproximación a la antigüedad crediticia)                         | Mayor antigüedad → menor riesgo              |
+| `TotalPastDue`          | Numérica    | Número total de retrasos en pagos                                           | Más retrasos → mayor riesgo                  |
+| `weighted_late_score`   | Numérica    | Puntuación ponderada de retrasos según gravedad                             | Penaliza más los impagos severos             |
+| `HasSeriousDelinquency` | Binaria     | 1 si existe algún retraso >90 días                                          | Fuerte indicador de default                  |
+| `high_utilization_flag` | Binaria     | 1 si la utilización de crédito >80%                                         | Alta utilización → mayor riesgo              |
+| `AgeGroup`              | Categórica  | Edad agrupada en rangos                                                     | Captura efectos del ciclo de vida            |
+| `IncomeGroup`           | Categórica  | Cuartiles de ingreso                                                        | Segmentación socioeconómica                  |
+| `DTICategory`           | Categórica  | Categorías del ratio deuda/ingresos (DTI)                                   | Mayor DTI → menor capacidad de pago          |
+
+
+
