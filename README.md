@@ -50,14 +50,20 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 
 
 
-#### Datos Faltantes
+#### 1.1. Datos Faltantes
 
+- Primeramente hemos comprobado aquellas columnas que presentan datos faltantes:
 
+![Descripción](images/missing.png)
+
+- Como se puede comprobar por el presente gráfico, las variable MontlyIncome y NumberOfDependents son las únicas que presentan missing values. 
 
 - Para la variable MontlyIncome, debido a la presencia de outliers...
 
-![Descripción](missing.png)
+![Descripción](images/Income-Default.png)
 
+- Como existen ciertas diferencias en la distribución de la variable dependiendo de si el sujeto ha incurrido en Default o no, se ha considerado oportuno realizar el rellenado utilizando la mediana perteneciente a cada categoría, y no la general.
+  
 ```python
 # Realizamos primeramente una transformación logarítmica
 df["MonthlyIncome_log"] = np.log1p(df["MonthlyIncome"])
