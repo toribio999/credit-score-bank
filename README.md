@@ -49,7 +49,15 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 ### 1. Limpieza de datos 
 
 
+
+#### Datos Faltantes
+
+
+
 - Para la variable MontlyIncome, debido a la presencia de outliers...
+
+![Descripción](missing.png)
+
 ```python
 # Realizamos primeramente una transformación logarítmica
 df["MonthlyIncome_log"] = np.log1p(df["MonthlyIncome"])
