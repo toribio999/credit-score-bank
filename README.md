@@ -128,5 +128,196 @@ Esta sección resume las variables derivadas creadas con el objetivo de mejorar 
 | `IncomeGroup`           | Categórica  | Cuartiles de ingreso                                                        | Segmentación socioeconómica                  |
 | `DTICategory`           | Categórica  | Categorías del ratio deuda/ingresos (DTI)                                   | Mayor DTI → menor capacidad de pago          |
 
+### 📊 Comparativa de Modelos
 
+Se evaluaron dos modelos para el problema de clasificación:
+
+- Regresión Logística (baseline optimizado)
+- XGBoost (modelo avanzado optimizado)
+
+---
+
+#### 🔎 Resultados: Regresión Logística (Optimizada)
+
+| Clase | Precisión | Recall | F1-score | Soporte |
+|------|----------|--------|----------|---------|
+| 0    | 0.97     | 0.87   | 0.92     | 27,996  |
+| 1    | 0.26     | 0.65   | 0.37     | 1,948   |
+
+| Métrica global     | Valor |
+|-------------------|------|
+| Accuracy          | 0.86 |
+| Macro Avg F1      | 0.64 |
+| Weighted Avg F1   | 0.88 |
+| AUC-PR            | 0.8508 |
+
+---
+
+#### 🔎 Resultados: XGBoost (Optimizado)
+
+| Clase | Precisión | Recall | F1-score | Soporte |
+|------|----------|--------|----------|---------|
+| 0    | 0.97     | 0.93   | 0.95     | 27,996  |
+| 1    | 0.40     | 0.66   | 0.50     | 1,948   |
+
+| Métrica global     | Valor |
+|-------------------|------|
+| Accuracy          | 0.91 |
+| Macro Avg F1      | 0.72 |
+| Weighted Avg F1   | 0.92 |
+| AUC-ROC           | 0.8765 |
+
+---
+
+####  ⚖️ Comparación Directa
+
+| Métrica              | Regresión Logística | XGBoost |
+|---------------------|--------------------|--------|
+| Accuracy            | 0.86               | 0.91   |
+| F1-score (Clase 1)  | 0.37               | 0.50   |
+| Recall (Clase 1)    | 0.65               | 0.66   |
+| Precisión (Clase 1) | 0.26               | 0.40   |
+
+---
+
+### 🎯 Optimización de Threshold
+
+Dado el fuerte desbalance de clases, no se utilizó el threshold por defecto (0.5).  
+En su lugar, se optimizó el umbral de decisión priorizando:
+
+> **Recall ≥ 0.65 en la clase positiva**
+
+---
+
+#### 🔎 Thresholds seleccionados
+
+| Modelo              | Threshold óptimo | Criterio |
+|---------------------|-----------------|----------|
+| Regresión Logística | 0.01            | Maximizar recall ≥ 0.65 |
+| XGBoost             | 0.3268          | Maximizar recall ≥ 0.65 |
+
+---
+
+### 🧠 Interpretación
+
+#### Regresión Logística (threshold = 0.01)
+
+- Threshold extremadamente bajo  
+- El modelo clasifica casi todo como positivo
+- Resultado:
+  - ✅ Alto recall (detecta muchos positivos)
+  - ❌ Muy baja precisión (muchos falsos positivos)
+
+👉 Indica que el modelo **no separa bien las clases**
+
+---
+
+#### XGBoost (threshold = 0.3268)
+
+- Threshold más razonable
+- Mantiene recall ≥ 0.65 sin colapsar la precisión
+
+👉 Indica que el modelo:
+- Tiene mejor capacidad de discriminación
+- Permite un balance más realista entre métricas
+
+---
+
+### ⚖️ Implicaciones de negocio
+
+- Reducir el threshold aumenta el recall pero también los falsos positivos
+- Aumentarlo mejora precisión pero pierde casos positivos
+
+👉 La elección depende del coste relativo de:
+- Falsos negativos (casos no detectados)
+- Falsos positivos (alarmas innecesarias)
+
+---
+
+### 📌 Conclusión sobre thresholds
+
+- El threshold de la Regresión Logística evidencia sus limitaciones
+- XGBoost permite un ajuste más equilibrado y usable en producción
+
+👉 Esto refuerza la elección de XGBoost como modelo final
+
+### 🧠 Análisis De los resultados
+
+#### 1. Desbalance de clases
+
+El dataset presenta un fuerte desbalance:
+- Clase 0: ~93%
+- Clase 1: ~7%
+
+Esto hace que:
+- Accuracy sea una métrica limitada
+- Sea clave analizar recall, precisión y F1 en la clase minoritaria
+
+---
+
+#### 2. Regresión Logística
+
+- Buen rendimiento en la clase mayoritaria
+- Recall aceptable en clase 1 (0.65)
+- **Problema principal:** precisión muy baja (0.26)
+  - Muchos falsos positivos
+- Modelo simple, interpretable, pero limitado para capturar relaciones complejas
+- **AUC-PR (Logística): 0.8508** : Métrica adecuada para desbalance
+
+👉 En la práctica: sirve como baseline, pero no es suficiente
+
+---
+
+#### 3. XGBoost
+
+- Mejora clara en todas las métricas clave
+- **Gran mejora en precisión de la clase 1 (0.26 → 0.40)**
+- Recall prácticamente igual (0.66)
+- F1-score mucho más equilibrado (0.50)
+- **AUC-PR (XGBoost): 0.8765** : Buena separación entre clases
+
+👉 Traducción real:
+- Detecta los mismos positivos…
+- …pero comete muchos menos falsos positivos
+- 
+---
+
+## 🚀 Conclusión
+
+XGBoost es claramente superior a la Regresión Logística en este problema:
+
+- Mejora significativa en la detección de la clase minoritaria
+- Mejor equilibrio entre precisión y recall
+- Mayor robustez global
+
+👉 Es el modelo recomendado para producción.
+
+---
+
+## ⚠️ Limitaciones
+
+- Precisión en clase positiva aún moderada (0.40)
+- Persisten falsos positivos
+- Dataset desbalanceado sigue siendo un reto
+
+---
+
+## 🔧 Próximos pasos
+
+- Técnicas de balanceo (SMOTE, undersampling)
+- Optimización enfocada en métricas de negocio:
+  - Recall: evaluar en términos monetarios si perder positivos es crítico.
+  - Precisión: evaluar si incurrir en falsos positivos es costoso.
+- Feature engineering adicional
+- Ensemble de modelos
+
+---
+
+#### 📌 Decisión final
+
+Se selecciona **XGBoost** como modelo final por ofrecer el mejor trade-off entre:
+
+- Detección de la clase positiva
+- Reducción de falsos positivos
+- Rendimiento global
 
