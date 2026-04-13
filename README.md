@@ -46,7 +46,7 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 
 ## Etapas
 
-### 1. Limpieza de datos 
+### 🧹 1. Limpieza de datos 
 
 
 
@@ -97,7 +97,7 @@ df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
 
 
 
-### 2. Análisis exploratorio
+### 📈 2. Análisis exploratorio
 
 Univariate and bivariate analysis of demographics, payment history, credit limits, and bill amounts. Includes:
 
@@ -107,7 +107,7 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 - Correlation heatmaps and target-stratified distributions
 
 
-### 🧩 Ingeniería de variables (Feature Engineering)
+### 🧩 3. Ingeniería de variables (Feature Engineering)
 
 -Esta sección resume las variables derivadas creadas con el objetivo de mejorar la capacidad predictiva del modelo de riesgo de crédito. Las transformaciones se centran en capturar la capacidad de pago, el comportamiento histórico del cliente y su segmentación.
 
@@ -128,16 +128,19 @@ Esta sección resume las variables derivadas creadas con el objetivo de mejorar 
 | `IncomeGroup`           | Categórica  | Cuartiles de ingreso                                                        | Segmentación socioeconómica                  |
 | `DTICategory`           | Categórica  | Categorías del ratio deuda/ingresos (DTI)                                   | Mayor DTI → menor capacidad de pago          |
 
-### 📊 Comparativa de Modelos
+### 📊 4. Desarrollo de los modelos de ML
 
 Se evaluaron dos modelos para el problema de clasificación:
 
-- Regresión Logística (baseline optimizado)
-- XGBoost (modelo avanzado optimizado)
+- Regresión Logística como modelo Baseline.
+- XGBoost como modelo más avanzado.
+- Se han evaluado otros modelos como LightGBM y RandomForest, sin embargo XGBoost ha arrojado mejores resultados.
 
 ---
 
-#### 🔎 Resultados: Regresión Logística (Optimizada)
+#### 🔎 4.1 Resultados: Regresión Logística 
+
+
 
 | Clase | Precisión | Recall | F1-score | Soporte |
 |------|----------|--------|----------|---------|
@@ -153,7 +156,7 @@ Se evaluaron dos modelos para el problema de clasificación:
 
 ---
 
-#### 🔎 Resultados: XGBoost (Optimizado)
+#### 🔎 4.2 Resultados: XGBoost (Optimizado)
 
 | Clase | Precisión | Recall | F1-score | Soporte |
 |------|----------|--------|----------|---------|
@@ -169,7 +172,7 @@ Se evaluaron dos modelos para el problema de clasificación:
 
 ---
 
-####  ⚖️ Comparación Directa
+####  4.3 Comparación Directa
 
 | Métrica              | Regresión Logística | XGBoost |
 |---------------------|--------------------|--------|
@@ -180,16 +183,14 @@ Se evaluaron dos modelos para el problema de clasificación:
 
 ---
 
-### 🎯 Optimización de Threshold
+#### 4.4 Optimización de Threshold
 
 Dado el fuerte desbalance de clases, no se utilizó el threshold por defecto (0.5).  
 En su lugar, se optimizó el umbral de decisión priorizando:
 
 > **Recall ≥ 0.65 en la clase positiva**
 
----
-
-#### 🔎 Thresholds seleccionados
+- Al final hemos seleccionado: 
 
 | Modelo              | Threshold óptimo | Criterio |
 |---------------------|-----------------|----------|
@@ -198,9 +199,15 @@ En su lugar, se optimizó el umbral de decisión priorizando:
 
 ---
 
-### 🧠 Interpretación
+### 🧠 5. Interpretación de los modelos 
 
-#### Regresión Logística (threshold = 0.01)
+
+- El threshold de la Regresión Logística evidencia sus limitaciones
+- XGBoost permite un ajuste más equilibrado y usable en producción
+
+👉 Esto refuerza la elección de XGBoost como modelo final
+
+#### 5.1 Regresión Logística (threshold = 0.01)
 
 - Threshold extremadamente bajo  
 - El modelo clasifica casi todo como positivo
@@ -212,7 +219,7 @@ En su lugar, se optimizó el umbral de decisión priorizando:
 
 ---
 
-#### XGBoost (threshold = 0.3268)
+#### 5.2 XGBoost (threshold = 0.3268)
 
 - Threshold más razonable
 - Mantiene recall ≥ 0.65 sin colapsar la precisión
@@ -223,7 +230,7 @@ En su lugar, se optimizó el umbral de decisión priorizando:
 
 ---
 
-### ⚖️ Implicaciones de negocio
+####  5.3 Implicaciones de negocio
 
 - Reducir el threshold aumenta el recall pero también los falsos positivos
 - Aumentarlo mejora precisión pero pierde casos positivos
@@ -234,16 +241,11 @@ En su lugar, se optimizó el umbral de decisión priorizando:
 
 ---
 
-### 📌 Conclusión sobre thresholds
 
-- El threshold de la Regresión Logística evidencia sus limitaciones
-- XGBoost permite un ajuste más equilibrado y usable en producción
 
-👉 Esto refuerza la elección de XGBoost como modelo final
+### 🧠 6. Análisis De los resultados
 
-### 🧠 Análisis De los resultados
-
-#### 1. Desbalance de clases
+#### 6.1 Desbalance de clases
 
 El dataset presenta un fuerte desbalance:
 - Clase 0: ~93%
@@ -255,7 +257,7 @@ Esto hace que:
 
 ---
 
-#### 2. Regresión Logística
+#### 6.2 Regresión Logística
 
 - Buen rendimiento en la clase mayoritaria
 - Recall aceptable en clase 1 (0.65)
@@ -268,7 +270,7 @@ Esto hace que:
 
 ---
 
-#### 3. XGBoost
+#### 6.3 XGBoost
 
 - Mejora clara en todas las métricas clave
 - **Gran mejora en precisión de la clase 1 (0.26 → 0.40)**
@@ -282,7 +284,7 @@ Esto hace que:
 - 
 ---
 
-## 🚀 Conclusión
+#### 🚀 6.4 Conclusión
 
 XGBoost es claramente superior a la Regresión Logística en este problema:
 
@@ -294,7 +296,7 @@ XGBoost es claramente superior a la Regresión Logística en este problema:
 
 ---
 
-## ⚠️ Limitaciones
+#### ⚠️ 6.5 Limitaciones
 
 - Precisión en clase positiva aún moderada (0.40)
 - Persisten falsos positivos
@@ -302,8 +304,23 @@ XGBoost es claramente superior a la Regresión Logística en este problema:
 
 ---
 
-## 🔧 Próximos pasos
+#### 📌 6.6 Decisión final
 
+Se selecciona **XGBoost** como modelo final por ofrecer el mejor trade-off entre:
+
+- Detección de la clase positiva
+- Reducción de falsos positivos
+- Rendimiento global
+
+
+
+
+
+
+
+### 🔧 7. Próximos pasos
+
+- Ampliación del EDA
 - Técnicas de balanceo (SMOTE, undersampling)
 - Optimización enfocada en métricas de negocio:
   - Recall: evaluar en términos monetarios si perder positivos es crítico.
@@ -311,13 +328,18 @@ XGBoost es claramente superior a la Regresión Logística en este problema:
 - Feature engineering adicional
 - Ensemble de modelos
 
+
 ---
 
-#### 📌 Decisión final
 
-Se selecciona **XGBoost** como modelo final por ofrecer el mejor trade-off entre:
 
-- Detección de la clase positiva
-- Reducción de falsos positivos
-- Rendimiento global
+
+
+
+
+
+
+
+
+
 
