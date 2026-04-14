@@ -278,10 +278,12 @@ Esto hace que:
 - F1-score mucho más equilibrado (0.50)
 - **AUC-PR (XGBoost): 0.8765** : Buena separación entre clases
 
-👉 Traducción real:
-- Detecta los mismos positivos…
-- …pero comete muchos menos falsos positivos
-- 
+⚠️ 6.5 Limitaciones
+
+- Precisión en clase positiva aún moderada (0.40)
+- Persisten falsos positivos
+- Dataset desbalanceado sigue siendo un reto
+
 ---
 
 #### 🚀 6.4 Conclusión
@@ -296,29 +298,24 @@ XGBoost es claramente superior a la Regresión Logística en este problema:
 
 ---
 
-#### ⚠️ 6.5 Limitaciones
-
-- Precisión en clase positiva aún moderada (0.40)
-- Persisten falsos positivos
-- Dataset desbalanceado sigue siendo un reto
-
----
-
-#### 📌 6.6 Decisión final
-
-Se selecciona **XGBoost** como modelo final por ofrecer el mejor trade-off entre:
-
-- Detección de la clase positiva
-- Reducción de falsos positivos
-- Rendimiento global
+### 🔧 7. Importancia de las variables
 
 
 
+#### 7.1 Importancia en el gain
+
+![Descripción](images/Features_xgb.png)
+
+#### 7.2 Lime
+
+![Descripción](images/Lime_xgb.png)
+
+#### 7.3 Shap
+
+![Descripción](images/Shap_xgb.png)
 
 
-
-
-### 🔧 7. Próximos pasos
+### 🔧 8. Próximos pasos
 
 - Ampliación del EDA
 - Técnicas de balanceo (SMOTE, undersampling)
