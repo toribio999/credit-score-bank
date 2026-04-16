@@ -115,6 +115,27 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 
 -El análisis de correlaciones muestra que la variable objetivo SeriousDlqin2yrs (default) está principalmente asociada con indicadores de comportamiento de pago atrasado, destacando weighted_late_score, TotalPastDue y NumberOfTimes90DaysLate, que presentan las correlaciones positivas más elevadas. Esto confirma que el historial de morosidad reciente es el principal driver del riesgo de incumplimiento. Variables derivadas como HasSeriousDelinquency y los distintos contadores de retrasos (30-59 y 60-89 días) también refuerzan esta señal, evidenciando una estructura coherente entre features relacionadas. Por otro lado, variables como age y CreditHistoryLength muestran correlaciones negativas moderadas, sugiriendo que perfiles más maduros y con mayor historial crediticio tienden a presentar menor probabilidad de default. En contraste, variables financieras clásicas como DebtRatio o MonthlyIncome tienen una relación débil con la variable objetivo, lo que sugiere que, en este dataset, el comportamiento histórico es mucho más predictivo que la capacidad económica declarada. Finalmente, se observa cierta multicolinealidad entre variables derivadas de morosidad, lo cual se tendrá en cuenta en fases posteriores de modelado para evitar redundancias y mejorar la interpretabilidad del modelo.
 
+#### 2.2. Comportamiento de las variable bajo riesgo
+
+
+<p align="center">
+  <img src="images/meandeaf.png" width="800"/>
+</p>
+
+
+
+
+
+
+#### 2.3. Análisis por grupos de edad
+
+- Este análisis explora la relación entre la edad de los clientes y su comportamiento crediticio, con foco en la probabilidad de default y los distintos niveles de morosidad. A través de la segmentación por grupos etarios, se busca identificar patrones de riesgo que permitan mejorar la capacidad predictiva del modelo de credit risk.
+  
+<p align="center">
+  <img src="images/age_group_analysis.png" width="700"/>
+</p>
+
+La gráfica muestra una clara concentración del riesgo en los grupos de edad intermedia, especialmente entre 36 y 55 años, donde se observan las tasas más altas tanto de default como de retrasos en distintos rangos (30–59 y 60–89 días). El grupo de 46–55 años destaca como el segmento con mayor volumen de incumplimientos y morosidad acumulada, lo que sugiere una combinación de mayor exposición crediticia y potenciales tensiones financieras. En contraste, los segmentos más jóvenes (18–25) y mayores (65+) presentan niveles significativamente más bajos de incumplimiento, lo que puede estar asociado a menor acceso al crédito o a comportamientos más conservadores. 
 
 ### 🧩 3. Ingeniería de variables (Feature Engineering)
 
@@ -314,16 +335,21 @@ XGBoost es claramente superior a la Regresión Logística en este problema:
 
 #### 7.1 Importancia en el gain
 
-![Descripción](images/Features_xgb.png)
+<p align="center">
+  <img src="images/Features_xgb.png" width="600"/>
+</p>
 
 #### 7.2 Lime
 
-![Descripción](images/Lime_xgb.png)
+<p align="center">
+  <img src="images/Lime_xgb.png" width="600"/>
+</p>
 
 #### 7.3 Shap
 
-![Descripción](images/Shap_xgb.png)
-
+<p align="center">
+  <img src="images/Shap_xgb.png" width="600"/>
+</p>
 
 ### 🔧 8. Próximos pasos
 
