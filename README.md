@@ -106,16 +106,8 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 - Outlier detection via IQR and visual inspection
 - Correlation heatmaps and target-stratified distributions
 
-#### 2.1. Correlaciones
-- En esta sección, se examina la matriz de correlación con el objetivo de identificar qué variables presentan mayor asociación con la variable objetivo SeriousDlqin2yrs, así como posibles problemas de multicolinealidad entre features. Este análisis resulta especialmente útil para entender qué señales aportan mayor valor predictivo y para orientar tanto la selección de variables como la construcción de nuevas transformaciones que mejoren el rendimiento y la interpretabilidad del modelo.
-  
-<p align="center">
-  <img src="images/Corr.png" width="600"/>
-</p>
 
--El análisis de correlaciones muestra que la variable objetivo SeriousDlqin2yrs (default) está principalmente asociada con indicadores de comportamiento de pago atrasado, destacando weighted_late_score, TotalPastDue y NumberOfTimes90DaysLate, que presentan las correlaciones positivas más elevadas. Esto confirma que el historial de morosidad reciente es el principal driver del riesgo de incumplimiento. Variables derivadas como HasSeriousDelinquency y los distintos contadores de retrasos (30-59 y 60-89 días) también refuerzan esta señal, evidenciando una estructura coherente entre features relacionadas. Por otro lado, variables como age y CreditHistoryLength muestran correlaciones negativas moderadas, sugiriendo que perfiles más maduros y con mayor historial crediticio tienden a presentar menor probabilidad de default. En contraste, variables financieras clásicas como DebtRatio o MonthlyIncome tienen una relación débil con la variable objetivo, lo que sugiere que, en este dataset, el comportamiento histórico es mucho más predictivo que la capacidad económica declarada. Finalmente, se observa cierta multicolinealidad entre variables derivadas de morosidad, lo cual se tendrá en cuenta en fases posteriores de modelado para evitar redundancias y mejorar la interpretabilidad del modelo.
-
-#### 2.2. Comportamiento de las variable bajo riesgo
+#### 2.1. Comportamiento de las variable bajo riesgo
 
 
 <p align="center">
@@ -127,7 +119,7 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 
 
 
-#### 2.3. Análisis por grupos de edad
+#### 2.2. Análisis por grupos de edad
 
 - Este análisis explora la relación entre la edad de los clientes y su comportamiento crediticio, con foco en la probabilidad de default y los distintos niveles de morosidad. A través de la segmentación por grupos etarios, se busca identificar patrones de riesgo que permitan mejorar la capacidad predictiva del modelo de credit risk.
   
@@ -136,6 +128,16 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 </p>
 
 La gráfica muestra una clara concentración del riesgo en los grupos de edad intermedia, especialmente entre 36 y 55 años, donde se observan las tasas más altas tanto de default como de retrasos en distintos rangos (30–59 y 60–89 días). El grupo de 46–55 años destaca como el segmento con mayor volumen de incumplimientos y morosidad acumulada, lo que sugiere una combinación de mayor exposición crediticia y potenciales tensiones financieras. En contraste, los segmentos más jóvenes (18–25) y mayores (65+) presentan niveles significativamente más bajos de incumplimiento, lo que puede estar asociado a menor acceso al crédito o a comportamientos más conservadores. 
+
+#### 2.3. Correlaciones
+- Por último, se examina la matriz de correlación con el objetivo de identificar qué variables presentan mayor asociación con la variable objetivo SeriousDlqin2yrs, así como posibles problemas de multicolinealidad entre features. Este análisis resulta especialmente útil para entender qué señales aportan mayor valor predictivo y para orientar tanto la selección de variables como la construcción de nuevas transformaciones que mejoren el rendimiento y la interpretabilidad del modelo.
+  
+<p align="center">
+  <img src="images/Corr.png" width="600"/>
+</p>
+
+-El análisis de correlaciones muestra que la variable objetivo SeriousDlqin2yrs (default) está principalmente asociada con indicadores de comportamiento de pago atrasado, destacando weighted_late_score, TotalPastDue y NumberOfTimes90DaysLate, que presentan las correlaciones positivas más elevadas. Esto confirma que el historial de morosidad reciente es el principal driver del riesgo de incumplimiento. Variables derivadas como HasSeriousDelinquency y los distintos contadores de retrasos (30-59 y 60-89 días) también refuerzan esta señal, evidenciando una estructura coherente entre features relacionadas. Por otro lado, variables como age y CreditHistoryLength muestran correlaciones negativas moderadas, sugiriendo que perfiles más maduros y con mayor historial crediticio tienden a presentar menor probabilidad de default. En contraste, variables financieras clásicas como DebtRatio o MonthlyIncome tienen una relación débil con la variable objetivo, lo que sugiere que, en este dataset, el comportamiento histórico es mucho más predictivo que la capacidad económica declarada. Finalmente, se observa cierta multicolinealidad entre variables derivadas de morosidad, lo cual se tendrá en cuenta en fases posteriores de modelado para evitar redundancias y mejorar la interpretabilidad del modelo.
+
 
 ### 🧩 3. Ingeniería de variables (Feature Engineering)
 
@@ -291,8 +293,7 @@ Esto hace que:
 #### 6.2 Regresión Logística
 
 - Buen rendimiento en la clase mayoritaria
-- Recall aceptable en clase 1 (0.65)
-- **Problema principal:** precisión muy baja (0.26)
+- **Problema principal:** al fijar el recall mínimo en 0.65 la precisión asociada es muy baja (0.26)
   - Muchos falsos positivos
 - Modelo simple, interpretable, pero limitado para capturar relaciones complejas
 - **AUC-PR (Logística): 0.8508** : Métrica adecuada para desbalance
@@ -304,8 +305,7 @@ Esto hace que:
 #### 6.3 XGBoost
 
 - Mejora clara en todas las métricas clave
-- **Gran mejora en precisión de la clase 1 (0.26 → 0.40)**
-- Recall prácticamente igual (0.66)
+- **Gran mejora en precisión de la clase 1 (0.26 → 0.40) con recall de (0.66)**
 - F1-score mucho más equilibrado (0.50)
 - **AUC-PR (XGBoost): 0.8765** : Buena separación entre clases
 
