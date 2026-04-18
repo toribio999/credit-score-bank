@@ -162,6 +162,8 @@ Esta sección resume las variables derivadas creadas con el objetivo de mejorar 
 
 ### 📊 4. Desarrollo de los modelos de ML
 
+El dataset presenta un marcado desbalanceo de clases (93% no-default / 7% default), lo que convierte la detección de la clase minoritaria (default) en el principal reto del proyecto. Métricas como la accuracy global resultan engañosas en este contexto —un modelo que prediga siempre "no default" alcanzaría el 93% de accuracy sin aportar ningún valor real—, por lo que la optimización se centró en el **F1-Score de la clase 1**, que pondera de forma equilibrada la precisión y el recall, sujeto a un **recall mínimo del 65%** para garantizar que al menos dos tercios de los defaults reales sean detectados.
+
 Se evaluaron dos modelos para el problema de clasificación:
 
 - Regresión Logística como modelo Baseline.
@@ -170,164 +172,48 @@ Se evaluaron dos modelos para el problema de clasificación:
 
 ---
 
+### XGBoost *(modelo seleccionado)*
 
-#### 🔎 4.1 Resultados: Regresión Logística 
+| Métrica   | Clase 0 (no-default) | Clase 1 (default) |
+|-----------|----------------------|-------------------|
+| Precision | 0.97                 | 0.40              |
+| Recall    | 0.93                 | 0.66              |
+| F1-Score  | 0.95                 | 0.50              |
+| **Accuracy global** | **0.91** | **Threshold: 0.3268** |
 
+XGBoost requirió bajar el threshold de decisión hasta **0.3268** (muy por debajo del 0.5 por defecto) para alcanzar el recall objetivo. Esto refleja que el modelo, entrenado sobre datos desbalanceados, tiende a asignar probabilidades bajas a la clase minoritaria, y es necesario reducir el umbral de clasificación para capturar más defaults reales.
 
-
-| Clase | Precisión | Recall | F1-score | Soporte |
-|------|----------|--------|----------|---------|
-| 0    | 0.97     | 0.87   | 0.92     | 27,996  |
-| 1    | 0.26     | 0.65   | 0.37     | 1,948   |
-
-| Métrica global     | Valor |
-|-------------------|------|
-| Accuracy          | 0.86 |
-| Macro Avg F1      | 0.64 |
-| Weighted Avg F1   | 0.88 |
-| AUC-PR            | 0.8508 |
+Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), aunque a costa de una precision del 40%: es decir, de cada 10 clientes clasificados como default, 6 lo son realmente y 4 son falsas alarmas. Este trade-off es habitual y generalmente aceptable en contextos de riesgo crediticio, donde el coste de no detectar un default supera ampliamente al de investigar una falsa alarma. El **F1-Score de 0.50** refleja este equilibrio en un escenario de alta dificultad.
 
 ---
 
-#### 🔎 4.2 Resultados: XGBoost (Optimizado)
+### Regresión Logística *(baseline)*
 
-| Clase | Precisión | Recall | F1-score | Soporte |
-|------|----------|--------|----------|---------|
-| 0    | 0.97     | 0.93   | 0.95     | 27,996  |
-| 1    | 0.40     | 0.66   | 0.50     | 1,948   |
+| Métrica   | Clase 0 (no-default) | Clase 1 (default) |
+|-----------|----------------------|-------------------|
+| Precision | 0.97                 | 0.26              |
+| Recall    | 0.87                 | 0.65              |
+| F1-Score  | 0.92                 | 0.37              |
+| **Accuracy global** | **0.86** | **Threshold: 0.5800** |
 
-| Métrica global     | Valor |
-|-------------------|------|
-| Accuracy          | 0.91 |
-| Macro Avg F1      | 0.72 |
-| Weighted Avg F1   | 0.92 |
-| AUC-ROC           | 0.8765 |
+La regresión logística alcanza un recall similar (0.65 vs 0.66) pero con una precision notablemente inferior: solo el **26% de los clientes marcados como default lo son realmente**, frente al 40% de XGBoost. Esto significa que el modelo logístico genera **el doble de falsas alarmas** para detectar aproximadamente la misma cantidad de defaults reales, lo que lo hace considerablemente menos eficiente.
 
----
-
-####  4.3 Comparación Directa
-
-| Métrica              | Regresión Logística | XGBoost |
-|---------------------|--------------------|--------|
-| Accuracy            | 0.86               | 0.91   |
-| F1-score (Clase 1)  | 0.37               | 0.50   |
-| Recall (Clase 1)    | 0.65               | 0.66   |
-| Precisión (Clase 1) | 0.26               | 0.40   |
+Su F1-Score de **0.37** confirma esta menor capacidad de discriminación: aunque ambos modelos logran el recall mínimo exigido, la regresión logística sacrifica demasiada precisión para conseguirlo.
 
 ---
 
-#### 4.4 Optimización de Threshold
+### Comparativa y conclusión
 
-Dado el fuerte desbalance de clases, no se utilizó el threshold por defecto (0.5).  
-En su lugar, se optimizó el umbral de decisión priorizando:
+| Modelo               | Threshold | Precision (c1) | Recall (c1) | F1 (c1) | Accuracy |
+|----------------------|-----------|----------------|-------------|---------|----------|
+| **XGBoost**          | 0.3268    | **0.40**       | **0.66**    | **0.50**| **0.91** |
+| Regresión Logística  | 0.5800    | 0.26           | 0.65        | 0.37    | 0.86     |
 
-> **Recall ≥ 0.65 en la clase positiva**
+XGBoost supera al baseline en todas las métricas relevantes. La diferencia más significativa está en la **precision** (+14 puntos porcentuales), lo que se traduce directamente en un F1-Score un **35% superior** (0.50 vs 0.37). Ambos modelos alcanzan un recall similar, pero XGBoost lo hace generando muchas menos falsas alarmas y con una accuracy global 5 puntos mayor.
 
-- Al final hemos seleccionado: 
-
-| Modelo              | Threshold óptimo | Criterio |
-|---------------------|-----------------|----------|
-| Regresión Logística | 0.01            | Maximizar recall ≥ 0.65 |
-| XGBoost             | 0.3268          | Maximizar recall ≥ 0.65 |
-
----
-
-### 🧠 5. Interpretación de los modelos 
+En un problema de credit scoring, esta diferencia tiene implicaciones prácticas claras: XGBoost permite actuar sobre una lista de clientes de riesgo más depurada, reduciendo costes operativos de revisión manual y mejorando la experiencia de clientes que no habrían incurrido en default. Por todo ello, **XGBoost se selecciona como modelo final del proyecto**.
 
 
-- El threshold de la Regresión Logística evidencia sus limitaciones
-- XGBoost permite un ajuste más equilibrado y usable en producción
-
-👉 Esto refuerza la elección de XGBoost como modelo final
-
-#### 5.1 Regresión Logística (threshold = 0.01)
-
-- Threshold extremadamente bajo  
-- El modelo clasifica casi todo como positivo
-- Resultado:
-  - ✅ Alto recall (detecta muchos positivos)
-  - ❌ Muy baja precisión (muchos falsos positivos)
-
-👉 Indica que el modelo **no separa bien las clases**
-
----
-
-#### 5.2 XGBoost (threshold = 0.3268)
-
-- Threshold más razonable
-- Mantiene recall ≥ 0.65 sin colapsar la precisión
-
-👉 Indica que el modelo:
-- Tiene mejor capacidad de discriminación
-- Permite un balance más realista entre métricas
-
----
-
-####  5.3 Implicaciones de negocio
-
-- Reducir el threshold aumenta el recall pero también los falsos positivos
-- Aumentarlo mejora precisión pero pierde casos positivos
-
-👉 La elección depende del coste relativo de:
-- Falsos negativos (casos no detectados)
-- Falsos positivos (alarmas innecesarias)
-
----
-
-
-
-### 🧠 6. Análisis De los resultados
-
-#### 6.1 Desbalance de clases
-
-El dataset presenta un fuerte desbalance:
-- Clase 0: ~93%
-- Clase 1: ~7%
-
-Esto hace que:
-- Accuracy sea una métrica limitada
-- Sea clave analizar recall, precisión y F1 en la clase minoritaria
-
----
-
-#### 6.2 Regresión Logística
-
-- Buen rendimiento en la clase mayoritaria
-- **Problema principal:** al fijar el recall mínimo en 0.65 la precisión asociada es muy baja (0.26)
-  - Muchos falsos positivos
-- Modelo simple, interpretable, pero limitado para capturar relaciones complejas
-- **AUC-PR (Logística): 0.8508** : Métrica adecuada para desbalance
-
-👉 En la práctica: sirve como baseline, pero no es suficiente
-
----
-
-#### 6.3 XGBoost
-
-- Mejora clara en todas las métricas clave
-- **Gran mejora en precisión de la clase 1 (0.26 → 0.40) con recall de (0.66)**
-- F1-score mucho más equilibrado (0.50)
-- **AUC-PR (XGBoost): 0.8765** : Buena separación entre clases
-
-⚠️ 6.5 Limitaciones
-
-- Precisión en clase positiva aún moderada (0.40)
-- Persisten falsos positivos
-- Dataset desbalanceado sigue siendo un reto
-
----
-
-#### 🚀 6.4 Conclusión
-
-XGBoost es claramente superior a la Regresión Logística en este problema:
-
-- Mejora significativa en la detección de la clase minoritaria
-- Mejor equilibrio entre precisión y recall
-- Mayor robustez global
-
-👉 Es el modelo recomendado para producción.
-
----
 
 ### 🔧 7. Importancia de las variables
 
