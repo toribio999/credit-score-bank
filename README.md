@@ -108,6 +108,10 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 - Outlier detection via IQR and visual inspection
 - Correlation heatmaps and target-stratified distributions
 
+#### 2.x Distribución de las variables predictoras
+
+<img src="images/variables_distr.png" style="width: 1000px; height: auto;"/>
+
 
 #### 2.x Distribución de la variable objetivo
 
