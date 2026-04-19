@@ -11,11 +11,13 @@
 Este proyecto desarrolla un sistema integral y listo para producción para la predicción del riesgo de impago crediticio a partir de datos financieros estructurados. En él, se abarca todo el ciclo de vida del modelo, desde el análisis exploratorio de datos y featuring engineering hasta el entrenamiento de modelos de machine learning y el análisis de explicabilidad mediante valores SHAP. Se evaluaron distintos enfoques, como Regresión Logística y XGBoost, abordando de forma específica el fuerte desbalanceo del conjunto de datos (93%-7%) mediante técnicas adecuadas para este tipo de problemática. XGBoost fue finalmente seleccionado por su sólido rendimiento predictivo y su capacidad para afrontar eficazmente este escenario. El modelo final obtenido permite estimar de manera fiable la probabilidad de que un cliente incurra en dificultades financieras en un horizonte de dos años, contribuyendo así a mejorar la toma de decisiones en concesión de crédito. 
 
 ## 🎯 Puntos clave  
+
 - Se ha creado un modelo de ML de predicción de riesgo de morosidad con un dataset amplio (100k+ filas), con una variable target severamente desbalanceada (93%-7%).
 - En el eda se han detectado algunos patrones interesantes y útiles para una posible toma de decisiones de negocio.
-- En el modelado se ha hecho especial énfasis en maximizar la relación entre recall de la variable minoritaria y la precisión global del modelo (F1-score), ajustando hiperparámetros y threshold acorde a este criterio.
-- Se han evaluado diferentes métricas como la precisión global del modelo, F1-Score y AUC-PR, tomando las precauciones necesarias a sabiendas del fuerte sesgo que podría generar el desbalance de la variable respuesta.
-- Finalmente se ha analizado la importancia de algunas de las variables más críticas del modelado, utilizando LIME y SHAP.
+En el modelado se puso especial énfasis en optimizar el equilibrio entre el recall de la clase minoritaria y la precisión global del modelo (F1-score), ajustando hiperparámetros y threshold según este criterio. Por requisitos de negocio, se decidió fijar un recall mínimo de 0.65 para la clase minoritaria y, a partir de ahí, se seleccionó la configuración con mejor F1-score para dicha clase.
+- Adicionalmente, se realizó un proceso de feature engineering orientado a generar variables relevantes que permitieran capturar el historial crediticio de cada individuo y mejorar la capacidad del modelo para discriminar entre distintos niveles de riesgo de impago.
+- En particular, el modelo final seleccionado fue XGBoost, alcanzando un rendimiento sólido con un threshold de 0.3268, 0.40 de precision, 0.66 de recall y 0.50 de F1-score en la clase minoritaria, manteniendo además una accuracy global de 0.91. Resultados razonables teniendo en cunta el fuerte desbalance que presenta la variable respuesta.
+- Finalmente, se analizaron las variables más influyentes del modelo final mediante LIME y SHAP, identificando que las relacionadas con el historial de pagos tardíos y la morosidad acumulada son los principales predictores de impago.
 
 
 ## Pipeline
@@ -105,6 +107,22 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 - Missing value patterns
 - Outlier detection via IQR and visual inspection
 - Correlation heatmaps and target-stratified distributions
+
+
+#### 2.x Distribución de la variable objetivo
+
+- La variable objetivo presenta un marcado desbalance de clases, siendo los casos de no incumplimiento ampliamente mayoritarios frente a los eventos de default. Este comportamiento es esperable en carteras crediticias reales, donde la tasa de mora suele ser reducida. No obstante, esta asimetría puede sesgar el entrenamiento de modelos predictivos hacia la clase dominante, por lo que se tendrán en cuenta métricas robustas al desbalance (ROC-AUC, PR-AUC, recall, precision) y técnicas específicas como ponderación de clases o remuestreo.
+
+<p align="center">
+  <img src="images/class_imbalance.png" width="800"/>
+</p>
+
+
+
+
+
+
+
 
 
 #### 2.1. Comportamiento de las variable bajo riesgo
@@ -217,9 +235,17 @@ En un problema de credit scoring, esta diferencia tiene implicaciones prácticas
 
 ### 🔧 7. Importancia de las variables
 
+Para garantizar la transparencia del modelo final (XGBoost), se aplicaron tres técnicas de interpretabilidad complementarias: **Feature Importance (Gain)** para una visión global del poder predictivo de cada variable, **SHAP** para entender el impacto direccional de cada feature sobre las predicciones, y **LIME** para explicaciones a nivel de instancia individual.
 
+Las tres técnicas convergen en una conclusión clara: el comportamiento histórico de pago del cliente es, con diferencia, el factor más determinante para predecir el default.
+
+---
 
 #### 7.1 Importancia en el gain
+
+El gráfico de importancia por ganancia refleja cuánto contribuye cada variable a reducir la impureza en los árboles del modelo. Las dos features dominantes son `weighted_late_score` y `TotalPastDue`, con una importancia notablemente superior al resto —prácticamente el doble que la tercera variable más relevante—, lo que indica que el modelo se apoya de forma muy intensa en el historial de pagos tardíos del cliente. A continuación aparecen `HasSeriousDelinquency` y `NumberOfTimes90DaysLate`, que refuerzan la misma señal: los retrasos graves y reiterados son el predictor más robusto de default. En un segundo nivel de importancia se sitúan `high_utilization_flag` y `utilization_capped`, indicando que el nivel de utilización del crédito disponible también aporta información valiosa, aunque bastante por debajo de las variables de morosidad. El resto de features —ingresos, ratio deuda/ingreso, número de líneas abiertas— contribuyen de forma marginal en términos de ganancia.
+
+---
 
 <p align="center">
   <img src="images/Features_xgb.png" width="600"/>
@@ -227,15 +253,30 @@ En un problema de credit scoring, esta diferencia tiene implicaciones prácticas
 
 #### 7.2 Lime
 
+La explicación LIME corresponde a una instancia concreta clasificada como **Default** y permite entender qué factores llevaron al modelo a esa decisión particular. La variable con mayor peso negativo (empujando hacia default) es `MonthlyIncome_missing <= 0`, confirmando que la ausencia del dato de ingresos es la señal individual más determinante en este caso. Le siguen `MonthlyIncome > 7403` y `weighted_late_score <= 0`, lo que puede parecer contraintuitivo —ingresos altos empujando hacia default— pero se explica porque LIME analiza combinaciones locales de condiciones: en este perfil específico, otros factores de riesgo prevalecen sobre el nivel de ingresos. `TotalPastDue <= 0` y `MonthlyIncome_log > 8.91` también contribuyen negativamente. En sentido contrario, `high_utilization_flag <= 0` y `NumberRealEstateLoansOrLines > 2` actúan como ligeros factores de mitigación del riesgo para esta instancia concreta.
+
+---
+
 <p align="center">
   <img src="images/Lime_xgb.png" width="600"/>
 </p>
 
 #### 7.3 Shap
+El análisis SHAP complementa la importancia por ganancia añadiendo la **dirección** del efecto de cada variable sobre la probabilidad de default. `weighted_late_score` vuelve a liderar: valores altos (en rojo) se asocian a SHAP values positivos, empujando la predicción hacia default, mientras que valores bajos reducen el riesgo. `TotalPastDue` muestra un patrón similar aunque con menor dispersión, y `utilization_capped` también impacta positivamente cuando es elevada.
+
+Un hallazgo especialmente relevante es el comportamiento de `MonthlyIncome_missing`: la ausencia de datos de ingresos genera SHAP values fuertemente positivos (mayor riesgo de default), lo que sugiere que la falta de información sobre ingresos es en sí misma una señal de riesgo que el modelo ha aprendido a explotar. En sentido contrario, valores altos de `MonthlyIncome` actúan como factor protector, empujando las predicciones hacia no-default. La variable `age` muestra un efecto protector moderado para clientes de mayor edad, consistente con la literatura de riesgo crediticio.
+
+---
+
 
 <p align="center">
   <img src="images/Shap_xgb.png" width="600"/>
 </p>
+
+
+
+> Las tres técnicas de interpretabilidad son consistentes entre sí y apuntan al mismo núcleo explicativo: **el historial de pagos tardíos y la morosidad acumulada son los predictores dominantes del default**, seguidos a distancia por el nivel de utilización del crédito y la disponibilidad de información sobre ingresos. Esta coherencia entre métodos globales y locales refuerza la confianza en el modelo y facilita su potencial uso en entornos regulados donde la explicabilidad de las decisiones crediticias es un requisito.
+
 
 ### 🔧 8. Próximos pasos
 
