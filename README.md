@@ -114,7 +114,7 @@ Univariate and bivariate analysis of demographics, payment history, credit limit
 - La variable objetivo presenta un marcado desbalance de clases, siendo los casos de no incumplimiento ampliamente mayoritarios frente a los eventos de default. Este comportamiento es esperable en carteras crediticias reales, donde la tasa de mora suele ser reducida. No obstante, esta asimetría puede sesgar el entrenamiento de modelos predictivos hacia la clase dominante, por lo que se tendrán en cuenta métricas robustas al desbalance (ROC-AUC, PR-AUC, recall, precision) y técnicas específicas como ponderación de clases o remuestreo.
 
 <p align="center">
-  <img src="images/class_imbalance.png" width="800"/>
+  <img src="images/class_imbalance.png" width="500"/>
 </p>
 
 
