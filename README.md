@@ -50,7 +50,7 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 
 ### 🧹 1. Limpieza de datos 
 
-
+- La limpieza de este datset ha implicado una serie de etapas 
 
 #### 1.1. Datos Faltantes
 
@@ -96,6 +96,10 @@ df["MonthlyIncome_log"] = np.log1p(df["MonthlyIncome"])
 df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
                             .transform(lambda x: x.fillna(x.median()))
 ```
+
+#### 1.2 Columnas con valores extraños
+
+- Algunas columnas, en particular `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse` y `NumberOfTime90DaysPastDueNotWorse` han presentado algunos valores fuera de lo común, por lo que hemos eliminado aquellos individuos en dicha situación.
 
 
 
@@ -194,7 +198,7 @@ Se evaluaron dos modelos para el problema de clasificación:
 
 ---
 
-### XGBoost *(modelo seleccionado)*
+### 4.1 XGBoost *(modelo seleccionado)*
 
 | Métrica   | Clase 0 (no-default) | Clase 1 (default) |
 |-----------|----------------------|-------------------|
@@ -209,7 +213,7 @@ Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), a
 
 ---
 
-### Regresión Logística *(baseline)*
+### 4.2 Regresión Logística *(baseline)*
 
 | Métrica   | Clase 0 (no-default) | Clase 1 (default) |
 |-----------|----------------------|-------------------|
@@ -218,13 +222,13 @@ Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), a
 | F1-Score  | 0.92                 | 0.37              |
 | **Accuracy global** | **0.86** | **Threshold: 0.5800** |
 
-La regresión logística alcanza un recall similar (0.65 vs 0.66) pero con una precision notablemente inferior: solo el **26% de los clientes marcados como default lo son realmente**, frente al 40% de XGBoost. Esto significa que el modelo logístico genera **el doble de falsas alarmas** para detectar aproximadamente la misma cantidad de defaults reales, lo que lo hace considerablemente menos eficiente.
+La regresión logística alcanza el máximo al recall 0.65 con una precision asociada notablemente inferior: solo el **26% de los clientes marcados como default lo son realmente**, frente al 40% de XGBoost. Esto significa que el modelo logístico genera **el doble de falsas alarmas** para detectar aproximadamente la misma cantidad de defaults reales, lo que lo hace considerablemente menos eficiente.
 
-Su F1-Score de **0.37** confirma esta menor capacidad de discriminación: aunque ambos modelos logran el recall mínimo exigido, la regresión logística sacrifica demasiada precisión para conseguirlo.
+Su F1-Score de **0.37** confirma esta menor capacidad de discriminación: aunque ambos modelos logran el F1-Score de la clase minoritaria máximo alrededor del recall mínimo exigido, la regresión logística sacrifica demasiada precisión para conseguirlo.
 
 ---
 
-### Comparativa y conclusión
+### 4.3 Comparativa y conclusión
 
 | Modelo               | Threshold | Precision (c1) | Recall (c1) | F1 (c1) | Accuracy |
 |----------------------|-----------|----------------|-------------|---------|----------|
@@ -237,7 +241,7 @@ En un problema de credit scoring, esta diferencia tiene implicaciones prácticas
 
 
 
-### 🔧 7. Importancia de las variables
+### 🔧 5. Importancia de las variables
 
 Para garantizar la transparencia del modelo final (XGBoost), se aplicaron tres técnicas de interpretabilidad complementarias: **Feature Importance (Gain)** para una visión global del poder predictivo de cada variable, **SHAP** para entender el impacto direccional de cada feature sobre las predicciones, y **LIME** para explicaciones a nivel de instancia individual.
 
@@ -245,7 +249,7 @@ Las tres técnicas convergen en una conclusión clara: el comportamiento histór
 
 ---
 
-#### 7.1 Importancia en el gain
+#### 5.1 Importancia en el gain
 
 El gráfico de importancia por ganancia refleja cuánto contribuye cada variable a reducir la impureza en los árboles del modelo. Las dos features dominantes son `weighted_late_score` y `TotalPastDue`, con una importancia notablemente superior al resto —prácticamente el doble que la tercera variable más relevante—, lo que indica que el modelo se apoya de forma muy intensa en el historial de pagos tardíos del cliente. A continuación aparecen `HasSeriousDelinquency` y `NumberOfTimes90DaysLate`, que refuerzan la misma señal: los retrasos graves y reiterados son el predictor más robusto de default. En un segundo nivel de importancia se sitúan `high_utilization_flag` y `utilization_capped`, indicando que el nivel de utilización del crédito disponible también aporta información valiosa, aunque bastante por debajo de las variables de morosidad. El resto de features —ingresos, ratio deuda/ingreso, número de líneas abiertas— contribuyen de forma marginal en términos de ganancia.
 
@@ -255,7 +259,7 @@ El gráfico de importancia por ganancia refleja cuánto contribuye cada variable
   <img src="images/Features_xgb.png" width="600"/>
 </p>
 
-#### 7.2 Lime
+#### 5.2 Lime
 
 La explicación LIME corresponde a una instancia concreta clasificada como **Default** y permite entender qué factores llevaron al modelo a esa decisión particular. La variable con mayor peso negativo (empujando hacia default) es `MonthlyIncome_missing <= 0`, confirmando que la ausencia del dato de ingresos es la señal individual más determinante en este caso. Le siguen `MonthlyIncome > 7403` y `weighted_late_score <= 0`, lo que puede parecer contraintuitivo —ingresos altos empujando hacia default— pero se explica porque LIME analiza combinaciones locales de condiciones: en este perfil específico, otros factores de riesgo prevalecen sobre el nivel de ingresos. `TotalPastDue <= 0` y `MonthlyIncome_log > 8.91` también contribuyen negativamente. En sentido contrario, `high_utilization_flag <= 0` y `NumberRealEstateLoansOrLines > 2` actúan como ligeros factores de mitigación del riesgo para esta instancia concreta.
 
@@ -265,7 +269,7 @@ La explicación LIME corresponde a una instancia concreta clasificada como **Def
   <img src="images/Lime_xgb.png" width="600"/>
 </p>
 
-#### 7.3 Shap
+#### 5.3 Shap
 El análisis SHAP complementa la importancia por ganancia añadiendo la **dirección** del efecto de cada variable sobre la probabilidad de default. `weighted_late_score` vuelve a liderar: valores altos (en rojo) se asocian a SHAP values positivos, empujando la predicción hacia default, mientras que valores bajos reducen el riesgo. `TotalPastDue` muestra un patrón similar aunque con menor dispersión, y `utilization_capped` también impacta positivamente cuando es elevada.
 
 Un hallazgo especialmente relevante es el comportamiento de `MonthlyIncome_missing`: la ausencia de datos de ingresos genera SHAP values fuertemente positivos (mayor riesgo de default), lo que sugiere que la falta de información sobre ingresos es en sí misma una señal de riesgo que el modelo ha aprendido a explotar. En sentido contrario, valores altos de `MonthlyIncome` actúan como factor protector, empujando las predicciones hacia no-default. La variable `age` muestra un efecto protector moderado para clientes de mayor edad, consistente con la literatura de riesgo crediticio.
@@ -282,15 +286,14 @@ Un hallazgo especialmente relevante es el comportamiento de `MonthlyIncome_missi
 > Las tres técnicas de interpretabilidad son consistentes entre sí y apuntan al mismo núcleo explicativo: **el historial de pagos tardíos y la morosidad acumulada son los predictores dominantes del default**, seguidos a distancia por el nivel de utilización del crédito y la disponibilidad de información sobre ingresos. Esta coherencia entre métodos globales y locales refuerza la confianza en el modelo y facilita su potencial uso en entornos regulados donde la explicabilidad de las decisiones crediticias es un requisito.
 
 
-### 🔧 8. Próximos pasos
+### ➡️ 6. Próximos pasos
 
-- Ampliación del EDA
-- Técnicas de balanceo (SMOTE, undersampling)
+- Ampliación del EDA.
+- Técnicas de balanceo más avanzadas como SMOTE o undersampling.
 - Optimización enfocada en métricas de negocio:
-  - Recall: evaluar en términos monetarios si perder positivos es crítico.
-  - Precisión: evaluar si incurrir en falsos positivos es costoso.
-- Feature engineering adicional
-- Ensemble de modelos
+  - Recall: evaluar en términos monetarios el grado exacto de
+  - Precisión: evaluar que tan costoso es incurrir en falsos positivos.
+- Ensemble de modelos.
 
 
 ---
