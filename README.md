@@ -137,7 +137,7 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 - La variable objetivo presenta un marcado desbalance de clases, siendo los casos de no incumplimiento ampliamente mayoritarios frente a los eventos de default. Este comportamiento es esperable en carteras crediticias reales, donde la tasa de mora suele ser reducida. No obstante, esta asimetría puede sesgar el entrenamiento de modelos predictivos hacia la clase dominante, por lo que se tendrán en cuenta métricas robustas al desbalance (ROC-AUC, PR-AUC, recall, precision) y técnicas específicas como ponderación de clases o remuestreo.
 
 <p align="center">
-  <img src="images/class_imbalance.png" width="500"/>
+  <img src="images/class_imbalance_1.png" width="500"/>
 </p>
 
 
@@ -150,9 +150,10 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 
 ### 2.3 Comportamiento de las variable bajo riesgo
 
+El presente apartado revela diferencias claras entre clientes con y sin incumplimiento de pago (default). En promedio, los clientes que no entran en mora presentan mayores ingresos mensuales, una edad ligeramente superior y ratios de endeudamiento más bajos, mientras que el grupo en default concentra perfiles con menor capacidad de ingresos y mayor presión financiera. Estas variables muestran una relación consistente con el riesgo crediticio, por lo que resultan especialmente relevantes para la construcción de modelos predictivos orientados a estimar la probabilidad de impago y mejorar la toma de decisiones en concesión de crédito.
 
 <p align="center">
-  <img src="images/meandeaf.png" width="800"/>
+  <img src="images/mean_diff.png" width="800"/>
 </p>
 
 
