@@ -51,7 +51,7 @@ Este conjunto de datos incluye información financiera y de comportamiento de lo
 En esta fase se llevaron a cabo diversas tareas de limpieza destinadas a mejorar la calidad y consistencia del dataset, eliminando registros inconsistentes antes del modelado. Adicionalmente, también se abordó el tratamiento de los valores nulos presentes en los datos.
 
 
-### 1.1. Limpieza general
+### 1.1 Limpieza general
 
 
 - **Depuración de `age`:** se eliminaron las observaciones con edades no plausibles, concretamente valores inferiores a 18 años y superiores a 110.  
@@ -59,7 +59,7 @@ En esta fase se llevaron a cabo diversas tareas de limpieza destinadas a mejorar
 - **Tratamiento de valores atípicos:** se detectaron registros anómalos en las variables `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse` y `NumberOfTime90DaysPastDueNotWorse`, relacionadas con históricos de impagos. Estos casos fueron eliminados para evitar distorsiones en el análisis. Los registros eliminados por esta última causa representaban solo 270 observaciones, por lo que la pérdida de información fue mínima en relación con el tamaño total del dataset.
 
 
-### 1.2. Datos Faltantes
+### 1.2 Datos Faltantes
 
 - Primeramente identificamos las columnas que presentes datos faltantes, en particular:
 
@@ -148,7 +148,7 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 
 
 
-### 2.3. Comportamiento de las variable bajo riesgo
+### 2.3 Comportamiento de las variable bajo riesgo
 
 
 <p align="center">
@@ -156,7 +156,9 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 </p>
 
 
-### 2.4. Historial de mora e impago 
+### 2.4 Historial de mora e impago 
+
+El historial de mora muestra una relación clara y creciente con el riesgo de impago. En las tres variables analizadas (retrasos de 30–59, 60–89 y más de 90 días), los clientes que entraron en default presentan una mayor proporción de incidencias previas que aquellos sin impago. Además, la tasa de default aumenta de forma consistente conforme crece el número de atrasos registrados, especialmente en los retrasos más severos (+90 días), donde se observa la mayor capacidad discriminante. Estos resultados confirman que el comportamiento de pago pasado es uno de los predictores más relevantes dentro del riesgo de crédito.
 
 <p align="center">
   <img src="images/late_payments.png" width="800"/>
@@ -164,7 +166,7 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 
 
 
-### 2.4. Análisis por grupos de edad
+### 2.5 Análisis por grupos de edad
 
 - Este análisis explora la relación entre la edad de los clientes y su comportamiento crediticio, con foco en la probabilidad de default y los distintos niveles de morosidad. A través de la segmentación por grupos etarios, se busca identificar patrones de riesgo que permitan mejorar la capacidad predictiva del modelo de credit risk.
   
@@ -174,7 +176,7 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 
 La gráfica muestra una clara concentración del riesgo en los grupos de edad intermedia, especialmente entre 36 y 55 años, donde se observan las tasas más altas tanto de default como de retrasos en distintos rangos (30–59 y 60–89 días). El grupo de 46–55 años destaca como el segmento con mayor volumen de incumplimientos y morosidad acumulada, lo que sugiere una combinación de mayor exposición crediticia y potenciales tensiones financieras. En contraste, los segmentos más jóvenes (18–25) y mayores (65+) presentan niveles significativamente más bajos de incumplimiento, lo que puede estar asociado a menor acceso al crédito o a comportamientos más conservadores. 
 
-### 2.5. Correlaciones
+### 2.6 Correlaciones
 - Por último, se examina la matriz de correlación con el objetivo de identificar qué variables presentan mayor asociación con la variable objetivo SeriousDlqin2yrs, así como posibles problemas de multicolinealidad entre features. Este análisis resulta especialmente útil para entender qué señales aportan mayor valor predictivo y para orientar tanto la selección de variables como la construcción de nuevas transformaciones que mejoren el rendimiento y la interpretabilidad del modelo.
   
 <p align="center">
