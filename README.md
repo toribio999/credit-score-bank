@@ -156,7 +156,11 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 </p>
 
 
+### 2.4. Historial de mora e impago 
 
+<p align="center">
+  <img src="images/late_payments.png" width="800"/>
+</p>
 
 
 
