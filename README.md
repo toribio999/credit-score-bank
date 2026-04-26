@@ -2,27 +2,39 @@
 
 > Proyecto de ML end-to-end · Clasificación Binaria · Limpieza de datos · Feature Engineering · Regresión Logística · XGBoost + SHAP + LIME 
 
-![Python](https://img.shields.io/badge/Python-3.14-blue) ![Xgboost](https://img.shields.io/badge/XGBoost-1.x-teal) ![SHAP](https://img.shields.io/badge/SHAP-0.44-purple) ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange) ![LIME](https://img.shields.io/badge/LIME-0.2.2-orange)
-
+![Python](https://img.shields.io/badge/Python-3.14-blue)
+![XGBoost](https://img.shields.io/badge/XGBoost-1.x-teal)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange)
+![SHAP](https://img.shields.io/badge/SHAP-0.44-purple)
+![LIME](https://img.shields.io/badge/LIME-0.2.2-orange)
+![Pandas](https://img.shields.io/badge/Pandas-2.x-black)
+![NumPy](https://img.shields.io/badge/NumPy-1.x-blue)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-3.x-red)
+![Seaborn](https://img.shields.io/badge/Seaborn-0.13-lightblue)
 ---
 
 ## Resumen
 
-Este proyecto desarrolla un sistema integral y listo para producción para la predicción del riesgo de impago crediticio a partir de datos financieros estructurados. En él, se abarca todo el ciclo de vida del modelo, desde el análisis exploratorio de datos y featuring engineering hasta el entrenamiento de modelos de machine learning y el análisis de explicabilidad mediante valores SHAP. Se evaluaron distintos enfoques, como Regresión Logística y XGBoost, abordando de forma específica el fuerte desbalanceo del conjunto de datos (93%-7%) mediante técnicas adecuadas para este tipo de problemática. XGBoost fue finalmente seleccionado por su sólido rendimiento predictivo y su capacidad para afrontar eficazmente este escenario. El modelo final obtenido permite estimar de manera fiable la probabilidad de que un cliente incurra en dificultades financieras en un horizonte de dos años, contribuyendo así a mejorar la toma de decisiones en concesión de crédito. 
+Este proyecto desarrolla un sistema integral orientado a la predicción del riesgo de impago crediticio a partir de datos financieros estructurados. Se cubre todo el ciclo de vida analítico, desde el análisis exploratorio de datos (EDA) y el feature engineering, hasta el entrenamiento, validación y evaluación de modelos de machine learning, incorporando además técnicas de explicabilidad mediante SHAP y LIME.
+
+Se evaluaron distintos enfoques, entre ellos Regresión Logística, XGBoost y LightGBM, prestando especial atención al fuerte desbalanceo de clases presente en el conjunto de datos (93% no default / 7% default) mediante estrategias adecuadas para este tipo de problemática.
+
+Finalmente, XGBoost fue seleccionado como modelo final por su sólido rendimiento predictivo y su capacidad para manejar eficazmente este escenario. El modelo permite estimar la probabilidad de que un cliente incurra en dificultades financieras en un horizonte de dos años, facilitando una mejor toma de decisiones en procesos de concesión y gestión del riesgo de crédito.
 
 ## 🎯 Puntos clave  
 
 - Se ha creado un modelo de ML de predicción de riesgo de morosidad con un dataset amplio (100k+ filas), con una variable target severamente desbalanceada (93%-7%).
-- En el eda se han detectado algunos patrones interesantes y útiles para una posible toma de decisiones de negocio.
+- Primeramente, llevó a cabo un proceso exhaustivo de limpieza y depuración de datos sobre un dataset de más de 100k registros, orientado a garantizar la calidad de la información antes del modelado. Este proceso incluyó la identificación y eliminación de datos erróneos o inconsistentes, el tratamiento de observaciones con valores atípicos o fuera de rango, y la gestión de valores nulos mediante estrategias específicas adaptadas a cada variable y casuística.
+- Se realizó un Análisis Exploratorio de Datos (EDA) orientado a comprender la estructura del dataset y los principales factores asociados al riesgo de morosidad. El estudio incluyó el análisis de la distribución de las variables predictoras, la distribución de la variable objetivo, el comportamiento de las variables en perfiles de mayor riesgo, la relación entre historial de mora e impago y probabilidad de default, así como un análisis segmentado por grupos de edad para identificar patrones diferenciales entre colectivos.
 - Adicionalmente, se realizó un proceso de feature engineering orientado a generar variables relevantes que permitieran capturar el historial crediticio de cada individuo y mejorar la capacidad del modelo para discriminar entre distintos niveles de riesgo de impago.
 - En el modelado se puso especial énfasis en optimizar el equilibrio entre el recall de la clase minoritaria y la precisión global del modelo (F1-score), ajustando hiperparámetros y threshold según este criterio. Por requisitos de negocio, se decidió fijar un recall mínimo de 0.65 para la clase minoritaria y, a partir de ahí, se seleccionó la configuración con mejor F1-score para dicha clase.
-- En particular, el modelo final seleccionado fue XGBoost, alcanzando un rendimiento sólido con un threshold de 0.3268, 0.40 de precision, 0.66 de recall y 0.50 de F1-score en la clase minoritaria, manteniendo además un AUC_PR score de 0.91. Resultados razonables teniendo en cunta el fuerte desbalance que presenta la variable respuesta.
+- El modelo final seleccionado fue XGBoost, destacando especialmente por un AUC-PR de 0.91, indicador clave en problemas con fuerte desbalanceo de clases. Con un threshold de 0.3268, el modelo alcanzó además un recall de 0.66, precision de 0.40 y F1-score de 0.50 sobre la clase minoritaria, resultados sólidos y consistentes dado el fuerte desbalance de la variable respuesta.
 - Finalmente, se analizaron las variables más influyentes del modelo final mediante LIME y SHAP, identificando que las relacionadas con el historial de pagos tardíos y la morosidad acumulada son los principales predictores de impago.
 
 
 ## Pipeline
 ```
-Limpieza de datos > EDA  ›  Feature Engineering  ›  Entrenamiento y evaluación de los modelos  ›  SHAP Analysis
+Limpieza de datos > EDA  ›  Feature Engineering  ›  Entrenamiento y evaluación de los modelos  ›  Importancia de las variables
 ```
 
 
@@ -61,13 +73,15 @@ En esta fase se llevaron a cabo diversas tareas de limpieza destinadas a mejorar
 
 ### 1.2 Datos Faltantes
 
-- Primeramente identificamos las columnas que presentes datos faltantes, en particular:
+Seguidamente se ha atacado el problema de los datos faltantes. En él, primeramente, hemos identificado las columnas afecvtadas, así como el grado de afectación.
 
 ![Descripción](images/missing.png)
 
 - Como se puede comprobar por el presente gráfico, las variable `MontlyIncome` y `NumberOfDependents` son las únicas que presentan missing values.
 
-- En primera instancia trataremos la variable `NumberOfDependents`, ya que es más intuitiva. Para entenderla veámos la distribución de sus valores:
+#### 1.2.1 NumberOfDependents
+
+- En primera instancia trataremos la variable `NumberOfDependents`, ya que es más intuitiva. Para entenderla mejor veámos la distribución de sus valores:
   
 Dependientes | Nº de clientes
 -------------|---------------
@@ -86,8 +100,9 @@ Dependientes | Nº de clientes
 20           | 1
 
 - La distribución de la variable muestra que la gran mayoría de los clientes presentan entre 0 y 2 dependientes, concentrando así la mayor parte de las observaciones. Asimismo, se identifican valores atípicos claros (como 10, 13 y 20 dependientes), cuya frecuencia es extremadamente baja y, por tanto, poco representativa del conjunto de datos. En consecuencia, se ha optado por eliminar estos outliers para evitar distorsiones en el análisis. Para la imputación de valores faltantes en el resto de observaciones, se ha utilizado la moda (0), al ser el valor más frecuente y representativo de la distribución.
- 
-- La variable `MontlyIncome`, por otro lado, es más compleja de tratar, esta presenta un 19,77% y una distribución sesgada a la derecha, con algunos outliers extremos.
+
+#### 1.2.1 Monthly Income
+- La variable `MonthlyIncome`, por otro lado, es más compleja de tratar, esta presenta un 19,77% y una distribución sesgada a la derecha, con algunos outliers extremos.
 - Examianamos la distribución de la variable segmentada según la condición de morosidad del cliente, habiendo recortado los outliers más evidentes:
 
 ![Descripción](images/Income-Default.png)
@@ -112,7 +127,7 @@ df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
 
 ### 2.1 Distribución de las variables predictoras
 
-Se analizó la distribución de las variables numéricas con el objetivo de comprender mejor la estructura del dataset, identificar asimetrías, detectar valores extremos y anticipar posibles necesidades de preprocesamiento antes del modelado. Para facilitar la visualización, algunas variables fueron representadas con recorte visual en el percentil 99 para que sean visualmente más agradables.
+En este aparatdo se analizó la distribución de las variables numéricas con el objetivo de comprender mejor la estructura del dataset, identificar asimetrías, detectar valores extremos y anticipar posibles necesidades de preprocesamiento antes del modelado. Para facilitar la visualización, algunas variables fueron representadas con recorte visual en el percentil 99 para que sean visualmente más agradables.
 
 
 <img src="images/variables_distr.png" style="width: 1000px; height: auto;"/>
@@ -134,7 +149,7 @@ Se analizó la distribución de las variables numéricas con el objetivo de comp
 
 ### 2.2 Distribución de la variable objetivo
 
-- La variable objetivo presenta un marcado desbalance de clases, siendo los casos de no incumplimiento ampliamente mayoritarios frente a los eventos de default. Este comportamiento es esperable en carteras crediticias reales, donde la tasa de mora suele ser reducida. No obstante, esta asimetría puede sesgar el entrenamiento de modelos predictivos hacia la clase dominante, por lo que se tendrán en cuenta métricas robustas al desbalance (ROC-AUC, PR-AUC, recall, precision) y técnicas específicas como ponderación de clases o remuestreo.
+La variable objetivo presenta un marcado desbalance de clases, siendo los casos de no incumplimiento ampliamente mayoritarios frente a los eventos de default. Este comportamiento es esperable en carteras crediticias reales, donde la tasa de mora suele ser reducida. No obstante, esta asimetría puede sesgar el entrenamiento de modelos predictivos hacia la clase dominante, por lo que se tendrán en cuenta métricas robustas al desbalance y técnicas específicas como ponderación de clases o remuestreo para la fase de modelado.
 
 <p align="center">
   <img src="images/class_imbalance_1.png" width="500"/>
@@ -169,7 +184,7 @@ El historial de mora muestra una relación clara y creciente con el riesgo de im
 
 ### 2.5 Análisis por grupos de edad
 
-- Este análisis explora la relación entre la edad de los clientes y su comportamiento crediticio, con foco en la probabilidad de default y los distintos niveles de morosidad. A través de la segmentación por grupos etarios, se busca identificar patrones de riesgo que permitan mejorar la capacidad predictiva del modelo de credit risk.
+Este análisis explora la relación entre la edad de los clientes y su comportamiento crediticio, con foco en la probabilidad de default y los distintos niveles de morosidad. A través de la segmentación por grupos etarios, se busca identificar patrones de riesgo que permitan mejorar la capacidad predictiva del modelo de credit risk.
   
 <p align="center">
   <img src="images/age_group_analysis.png" width="700"/>
@@ -211,32 +226,23 @@ Esta sección resume las variables derivadas creadas con el objetivo de mejorar 
 
 ## 📊 4. Desarrollo de los modelos de ML
 
-El dataset presenta un marcado desbalanceo de clases (93% no-default / 7% default), lo que convierte la detección de la clase minoritaria (default) en el principal reto del proyecto. Métricas como la accuracy global resultan engañosas en este contexto —un modelo que prediga siempre "no default" alcanzaría el 93% de accuracy sin aportar ningún valor real—, por lo que la optimización se centró en el **F1-Score de la clase 1**, que pondera de forma equilibrada la precisión y el recall, sujeto a un **recall mínimo del 65%** para garantizar que al menos dos tercios de los defaults reales sean detectados.
+Como se ha comentado previamente, el dataset presenta un marcado desbalanceo de clases (93% no-default / 7% default), lo que dificulta de forma significativa la identificación de la clase minoritaria (default).
+En este contexto, métricas como la accuracy global pueden resultar engañosas, ya que un modelo que predijera siempre la clase mayoritaria (no default) alcanzaría un 93% de accuracy sin aportar valor real al problema. Por este motivo, la optimización del modelo se centró en el F1-Score de la clase 1, métrica que combina de forma equilibrada la precisión y el recall.
+Adicionalmente, se estableció como restricción un recall mínimo del 65%, con el objetivo de garantizar la detección de al menos dos tercios de los casos reales de default.
+Por último, también se consideró el AUC-PR (Area Under the Precision-Recall Curve), especialmente relevante en escenarios de fuerte desbalanceo de clases.
 
-Se evaluaron dos modelos para el problema de clasificación:
+Se evaluaron distintos modelos para abordar el problema de clasificación, entre los que destacan:
 
-- Regresión Logística como modelo Baseline.
-- XGBoost como modelo más avanzado.
-- Se han evaluado otros modelos como LightGBM y RandomForest, sin embargo XGBoost ha arrojado mejores resultados.
-
----
-
-### 4.1 XGBoost *(modelo seleccionado)*
-
-| Métrica   | Clase 0 (no-default) | Clase 1 (default) |
-|-----------|----------------------|-------------------|
-| Precision | 0.97                 | 0.40              |
-| Recall    | 0.93                 | 0.66              |
-| F1-Score  | 0.95                 | 0.50              |
-| **AUC-PR** | **0.9021** | **Threshold: 0.3268** |
-
-XGBoost requirió bajar el threshold de decisión hasta **0.3268** (muy por debajo del 0.5 por defecto) para alcanzar el recall objetivo. Esto refleja que el modelo, entrenado sobre datos desbalanceados, tiende a asignar probabilidades bajas a la clase minoritaria, y es necesario reducir el umbral de clasificación para capturar más defaults reales.
-
-Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), aunque a costa de una precision del 40%: es decir, de cada 10 clientes clasificados como default, 6 lo son realmente y 4 son falsas alarmas. Este trade-off es habitual y generalmente aceptable en contextos de riesgo crediticio, donde el coste de no detectar un default supera ampliamente al de investigar una falsa alarma. El **F1-Score de 0.50** refleja este equilibrio en un escenario de alta dificultad.
+- Regresión Logística, utilizada como modelo baseline para establecer una referencia inicial de rendimiento.
+- XGBoost, considerado como una alternativa más avanzada y con mayor capacidad predictiva.
+- También se analizaron otros enfoques, como LightGBM y Random Forest; no obstante, XGBoost fue el modelo que obtuvo los mejores resultados en las métricas evaluadas..
 
 ---
 
-### 4.2 Regresión Logística *(baseline)*
+
+### 4.1 Regresión Logística *(baseline)*
+
+En primera instancia, como es común en la literatura para este tipo de problemática, hemos ajustado un modelo de regresión logística. Debido a la problemática del desbalanceo de clase, el modelo ha sido construído ajustado los pesos convenientemente. 
 
 | Métrica   | Clase 0 (no-default) | Clase 1 (default) |
 |-----------|----------------------|-------------------|
@@ -245,9 +251,24 @@ Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), a
 | F1-Score  | 0.92                 | 0.37              |
 | **AUC-PR** | **0.8508** | **Threshold: 0.5800** |
 
-La regresión logística alcanza el máximo al recall 0.65 con una precision asociada notablemente inferior: solo el **26% de los clientes marcados como default lo son realmente**, frente al 40% de XGBoost. Esto significa que el modelo logístico genera **el doble de falsas alarmas** para detectar aproximadamente la misma cantidad de defaults reales, lo que lo hace considerablemente menos eficiente.
+Evaluados múltiples modelos, el que ha obtenido un mejor resultado alcanza un AUC-PR de 0.8508 con un umbral óptimo de 0.58. Para la clase minoritaria (default), el modelo alcanza el máximo f1-Score al recall mínimo exigido del 65%, cumpliendo así el objetivo de detectar una parte relevante de los casos reales. Sin embargo, este resultado se obtiene con una precisión de apenas 0.26, lo que implica que solo 1 de cada 4 clientes clasificados como default realmente lo es. En consecuencia, el modelo genera un volumen elevado de falsos positivos, produciendo aproximadamente el triple de alertas incorrectas por cada acierto. Su F1-Score de 0.37 confirma una baja capacidad de discriminación, por lo que este modelo servirá únicamente como referencia comparativa frente a enfoques más sofisticados.
 
-Su F1-Score de **0.37** confirma esta menor capacidad de discriminación: aunque ambos modelos logran el F1-Score de la clase minoritaria máximo alrededor del recall mínimo exigido, la regresión logística sacrifica demasiada precisión para conseguirlo.
+---
+
+### 4.2 XGBoost *(modelo final)*
+
+Como segunda aproximación, se ha entrenado un modelo XGBoost con ajuste de hiperparámetros mediante validación cruzada aleatorizada (RandomCV). Comparado con el baseline, supera al modelo logístico en todas las métricas relevantes:
+
+| Métrica   | Clase 0 (no-default) | Clase 1 (default) |
+|-----------|----------------------|-------------------|
+| Precision | 0.97                 | 0.40              |
+| Recall    | 0.93                 | 0.66              |
+| F1-Score  | 0.95                 | 0.50              |
+| **AUC-PR** | **0.9021** | **Threshold: 0.3268** |
+
+Este modelo requirió bajar el threshold de decisión hasta **0.3268** (muy por debajo del 0.5 por defecto) para alcanzar el recall objetivo. Esto refleja que el modelo, entrenado sobre datos desbalanceados, tiende a asignar probabilidades bajas a la clase minoritaria, y es necesario reducir el umbral de clasificación para capturar más defaults reales. 
+
+Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), con una precisión asociada del 40%: es decir, de cada 10 clientes clasificados como default, 6 lo son realmente y 4 son falsas alarmas. Este trade-off es habitual y generalmente aceptable en contextos de riesgo crediticio, donde el coste de no detectar un default supera ampliamente al de investigar una falsa alarma. El **F1-Score de 0.50** refleja este equilibrio en un escenario de alta dificultad. Adicionalmente, el modelado arroja un AUC-PR de 0.9021.
 
 ---
 
@@ -258,11 +279,8 @@ Su F1-Score de **0.37** confirma esta menor capacidad de discriminación: aunque
 | **XGBoost**          | 0.3268    | **0.40**       | **0.66**    | **0.50**| **0.90** |
 | Regresión Logística  | 0.5800    | 0.26           | 0.65        | 0.37    | 0.85     |
 
-XGBoost supera al baseline en todas las métricas relevantes. La diferencia más significativa está en la **precision** (+14 puntos porcentuales), lo que se traduce directamente en un F1-Score un **35% superior** (0.50 vs 0.37). Ambos modelos alcanzan un recall similar, pero XGBoost lo hace generando muchas menos falsas alarmas y con una accuracy global 5 puntos mayor.
-
-En un problema de credit scoring, esta diferencia tiene implicaciones prácticas claras: XGBoost permite actuar sobre una lista de clientes de riesgo más depurada, reduciendo costes operativos de revisión manual y mejorando la experiencia de clientes que no habrían incurrido en default. Por todo ello, **XGBoost se selecciona como modelo final del proyecto**.
-
-
+La mejora más significativa recae en la precision (+14 p.p.), que se traduce en un F1-Score un 35% superior (0.50 vs. 0.37) y un AUC-PR 5 puntos mayor, manteniendo un recall prácticamente idéntico. En otras palabras, XGBoost detecta la misma proporción de defaults reales generando considerablemente menos falsas alarmas.
+En un contexto de credit scoring, esta diferencia tiene implicaciones prácticas directas: una lista de clientes en riesgo más depurada reduce los costes operativos de revisión manual y evita fricciones innecesarias con clientes que no habrían incurrido en impago. Por todo ello, XGBoost se selecciona como modelo final del proyecto.
 
 ## 🔧 5. Importancia de las variables
 
@@ -293,6 +311,7 @@ La explicación LIME corresponde a una instancia concreta clasificada como **Def
 </p>
 
 ### 5.3 Shap
+
 El análisis SHAP complementa la importancia por ganancia añadiendo la **dirección** del efecto de cada variable sobre la probabilidad de default. `weighted_late_score` vuelve a liderar: valores altos (en rojo) se asocian a SHAP values positivos, empujando la predicción hacia default, mientras que valores bajos reducen el riesgo. `TotalPastDue` muestra un patrón similar aunque con menor dispersión, y `utilization_capped` también impacta positivamente cuando es elevada.
 
 Un hallazgo especialmente relevante es el comportamiento de `MonthlyIncome_missing`: la ausencia de datos de ingresos genera SHAP values fuertemente positivos (mayor riesgo de default), lo que sugiere que la falta de información sobre ingresos es en sí misma una señal de riesgo que el modelo ha aprendido a explotar. En sentido contrario, valores altos de `MonthlyIncome` actúan como factor protector, empujando las predicciones hacia no-default. La variable `age` muestra un efecto protector moderado para clientes de mayor edad, consistente con la literatura de riesgo crediticio.
