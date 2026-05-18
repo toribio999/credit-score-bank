@@ -75,7 +75,7 @@ In this phase, various cleaning tasks were carried out to improve the quality an
 
 The problem of missing data was then addressed. First, the affected columns were identified along with the extent of the impact.
 
-![Description](images/missing.png)
+![Description](images/missing_values.png)
 
 - As shown in the chart, the variables `MonthlyIncome` and `NumberOfDependents` are the only ones with missing values.
 
@@ -105,7 +105,7 @@ Dependants | No. of clients
 - The variable `MonthlyIncome`, on the other hand, is more complex to handle; it presents 19.77% missing values and a right-skewed distribution with some extreme outliers.
 - The distribution of the variable segmented by the customer's default status is examined, having trimmed the most obvious outliers:
 
-![Description](images/Income-Default.png)
+![Description](images/income_distr.png)
 
 
 - Since the distribution of the variable differs between individuals in default and those who are not, imputing missing values using a global measure could introduce biases and distort the relationship with the target variable. Therefore, a more robust imputation based on the median specific to each group is chosen, better preserving the real structure of the data. Additionally, a logarithmic transformation was applied, which reduces skewness and the effect of extreme values, resulting in a more stable and suitable distribution for modelling.
@@ -130,7 +130,7 @@ df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
 In this section, the distribution of numerical variables was analysed with the aim of better understanding the dataset structure, identifying skewness, detecting extreme values and anticipating potential preprocessing needs before modelling. To facilitate visualisation, some variables were represented with visual trimming at the 99th percentile for a cleaner display.
 
 
-<img src="images/variables_distr.png" style="width: 1000px; height: auto;"/>
+<img src="images/num_var_distribution.png" style="width: 1000px; height: auto;"/>
 
 **Main observations:**
 
@@ -152,7 +152,7 @@ In this section, the distribution of numerical variables was analysed with the a
 The target variable shows a marked class imbalance, with non-default cases being overwhelmingly dominant over default events. This behaviour is expected in real credit portfolios, where the delinquency rate is typically low. However, this asymmetry may bias predictive model training towards the dominant class, so imbalance-robust metrics and specific techniques such as class weighting or resampling will be used during the modelling phase.
 
 <p align="center">
-  <img src="images/class_imbalance_1.png" width="500"/>
+  <img src="images/Target_distribution.png" width="500"/>
 </p>
 
 
@@ -161,7 +161,7 @@ The target variable shows a marked class imbalance, with non-default cases being
 This section reveals clear differences between customers with and without payment default. On average, customers who do not default have higher monthly income, a slightly older age and lower debt ratios, while the default group concentrates profiles with lower income capacity and greater financial pressure. These variables show a consistent relationship with credit risk, making them particularly relevant for building predictive models aimed at estimating default probability and improving decision-making in credit granting.
 
 <p align="center">
-  <img src="images/mean_diff.png" width="800"/>
+  <img src="images/feature_distr_default.png" width="800"/>
 </p>
 
 
@@ -170,7 +170,7 @@ This section reveals clear differences between customers with and without paymen
 The delinquency history shows a clear and increasing relationship with default risk. Across the three variables analysed (30–59, 60–89 and over 90-day delays), customers who defaulted show a higher proportion of prior incidents than those without default. Furthermore, the default rate increases consistently as the number of recorded delays grows, especially for severe delays (+90 days), where the greatest discriminative power is observed. These results confirm that past payment behaviour is one of the most relevant predictors within credit risk.
 
 <p align="center">
-  <img src="images/late_payments.png" width="800"/>
+  <img src="images/delinquency_history.png" width="800"/>
 </p>
 
 
@@ -180,10 +180,14 @@ The delinquency history shows a clear and increasing relationship with default r
 This analysis explores the relationship between customers' age and their credit behaviour, focusing on default probability and different levels of delinquency. Through segmentation by age groups, the aim is to identify risk patterns that can improve the predictive capacity of the credit risk model.
   
 <p align="center">
-  <img src="images/age_group_analysis.png" width="700"/>
+  <img src="images/credit_behavior_age.png" width="700"/>
 </p>
 
 The chart shows a clear concentration of risk in middle-age groups, especially between 36 and 55 years, where the highest rates of both default and delays across different ranges (30–59 and 60–89 days) are observed. The 46–55 age group stands out as the segment with the highest volume of defaults and accumulated delinquency, suggesting a combination of greater credit exposure and potential financial stress. In contrast, the younger (18–25) and older (65+) segments show significantly lower levels of default, which may be associated with lower credit access or more conservative behaviour.
+
+<p align="center">
+  <img src="images/composite_risk_index.png" width="700"/>
+</p>
 
 ### 2.6 Correlations
 - Finally, the correlation matrix is examined with the aim of identifying which variables show the greatest association with the target variable SeriousDlqin2yrs, as well as potential multicollinearity issues between features. This analysis is particularly useful for understanding which signals provide the most predictive value and for guiding both variable selection and the construction of new transformations to improve model performance and interpretability.
