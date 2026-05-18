@@ -1,6 +1,6 @@
- # 🏦 Credit Default Prediction
+# 🏦 Credit Default Prediction
 
-> Proyecto de ML end-to-end · Clasificación Binaria · Limpieza de datos · Feature Engineering · Regresión Logística · XGBoost + SHAP + LIME 
+> End-to-end ML Project · Binary Classification · Data Cleaning · Feature Engineering · Logistic Regression · XGBoost + SHAP + LIME 
 
 ![Python](https://img.shields.io/badge/Python-3.14-blue)
 ![XGBoost](https://img.shields.io/badge/XGBoost-1.x-teal)
@@ -13,168 +13,161 @@
 ![Seaborn](https://img.shields.io/badge/Seaborn-0.13-lightblue)
 ---
 
-## Resumen
+## Summary
 
-Este proyecto desarrolla un sistema integral orientado a la predicción del riesgo de impago crediticio a partir de datos financieros estructurados. Se cubre todo el ciclo de vida analítico, desde el análisis exploratorio de datos (EDA) y el feature engineering, hasta el entrenamiento, validación y evaluación de modelos de machine learning, incorporando además técnicas de explicabilidad mediante SHAP y LIME.
+This project develops a comprehensive system aimed at predicting credit default risk from structured financial data. The full analytical lifecycle is covered, from exploratory data analysis (EDA) and feature engineering through to training, validation and evaluation of machine learning models, also incorporating explainability techniques via SHAP and LIME.
 
-Se evaluaron distintos enfoques, entre ellos Regresión Logística, XGBoost y LightGBM, prestando especial atención al fuerte desbalanceo de clases presente en el conjunto de datos (93% no default / 7% default) mediante estrategias adecuadas para este tipo de problemática.
+Several approaches were evaluated, including Logistic Regression, XGBoost and LightGBM, with particular attention paid to the strong class imbalance present in the dataset (93% non-default / 7% default) using strategies suited to this type of problem.
 
-Finalmente, XGBoost fue seleccionado como modelo final por su sólido rendimiento predictivo y su capacidad para manejar eficazmente este escenario. El modelo permite estimar la probabilidad de que un cliente incurra en dificultades financieras en un horizonte de dos años, facilitando una mejor toma de decisiones en procesos de concesión y gestión del riesgo de crédito.
+Ultimately, XGBoost was selected as the final model due to its solid predictive performance and its ability to handle this scenario effectively. The model estimates the probability that a customer will experience financial difficulties within a two-year horizon, enabling better decision-making in credit granting and risk management processes.
 
-## 🎯 Puntos clave  
+## 🎯 Key Highlights
 
-- Se ha creado un modelo de ML de predicción de riesgo de morosidad con un dataset amplio (100k+ filas), con una variable target severamente desbalanceada (93%-7%).
-- Primeramente, llevó a cabo un proceso exhaustivo de limpieza y depuración de datos sobre un dataset de más de 100k registros, orientado a garantizar la calidad de la información antes del modelado. Este proceso incluyó la identificación y eliminación de datos erróneos o inconsistentes, el tratamiento de observaciones con valores atípicos o fuera de rango, y la gestión de valores nulos mediante estrategias específicas adaptadas a cada variable y casuística.
-- Se realizó un Análisis Exploratorio de Datos (EDA) orientado a comprender la estructura del dataset y los principales factores asociados al riesgo de morosidad. El estudio incluyó el análisis de la distribución de las variables predictoras, la distribución de la variable objetivo, el comportamiento de las variables en perfiles de mayor riesgo, la relación entre historial de mora e impago y probabilidad de default, así como un análisis segmentado por grupos de edad para identificar patrones diferenciales entre colectivos.
-- Adicionalmente, se realizó un proceso de feature engineering orientado a generar variables relevantes que permitieran capturar el historial crediticio de cada individuo y mejorar la capacidad del modelo para discriminar entre distintos niveles de riesgo de impago.
-- En el modelado se puso especial énfasis en optimizar el equilibrio entre el recall de la clase minoritaria y la precisión global del modelo (F1-score), ajustando hiperparámetros y threshold según este criterio. Por requisitos de negocio, se decidió fijar un recall mínimo de 0.65 para la clase minoritaria y, a partir de ahí, se seleccionó la configuración con mejor F1-score para dicha clase.
-- El modelo final seleccionado fue XGBoost, destacando especialmente por un AUC-PR de 0.91, indicador clave en problemas con fuerte desbalanceo de clases. Con un threshold de 0.3268, el modelo alcanzó además un recall de 0.66, precision de 0.40 y F1-score de 0.50 sobre la clase minoritaria, resultados sólidos y consistentes dado el fuerte desbalance de la variable respuesta.
-- Finalmente, se analizaron las variables más influyentes del modelo final mediante LIME y SHAP, identificando que las relacionadas con el historial de pagos tardíos y la morosidad acumulada son los principales predictores de impago.
+- An ML model for default risk prediction was built on a large dataset (100k+ rows) with a severely imbalanced target variable (93%–7%).
+- An exhaustive data cleaning and preprocessing pipeline was carried out on a dataset of over 100k records to ensure data quality prior to modelling. This process included identifying and removing erroneous or inconsistent data, handling observations with outliers or out-of-range values, and managing missing values through specific strategies tailored to each variable and situation.
+- An Exploratory Data Analysis (EDA) was conducted to understand the dataset structure and the main factors associated with default risk. The study included analysis of predictor variable distributions, the distribution of the target variable, variable behaviour in higher-risk profiles, the relationship between payment delinquency history and default probability, and a segmented analysis by age group to identify differential patterns across cohorts.
+- Additionally, a feature engineering process was carried out to generate relevant variables capable of capturing each individual's credit history and improving the model's ability to discriminate between different levels of default risk.
+- During modelling, particular emphasis was placed on optimising the balance between minority class recall and overall model precision (F1-score), tuning hyperparameters and threshold accordingly. Given business requirements, a minimum recall of 0.65 for the minority class was established, and from there the configuration with the best F1-score for that class was selected.
+- The final selected model was XGBoost, which particularly stands out for an AUC-PR of 0.91, a key metric in problems with strong class imbalance. With a threshold of 0.3268, the model also achieved a recall of 0.66, precision of 0.40 and F1-score of 0.50 on the minority class — solid and consistent results given the strong imbalance of the target variable.
+- Finally, the most influential variables of the final model were analysed using LIME and SHAP, identifying that those related to late payment history and accumulated delinquency are the main predictors of default.
 
 
 ## Pipeline
 ```
-Limpieza de datos > EDA  ›  Feature Engineering  ›  Entrenamiento y evaluación de los modelos  ›  Importancia de las variables
+Data Cleaning > EDA  ›  Feature Engineering  ›  Model Training & Evaluation  ›  Feature Importance
 ```
 
 
 ## 📊 Dataset
-El presente proyecto ha sido desarrollado utilizando el conjunto de datos:  '[Give me some credit](https://www.kaggle.com/competitions/GiveMeSomeCredit/data)'.
-Este conjunto de datos incluye información financiera y de comportamiento de los solicitantes de crédito. Cada fila representa a una persona que solicita un préstamo e incluye atributos como ingresos, deudas, historial de pagos, número de cuentas abiertas y tamaño de la familia. Estos datos permiten analizar el riesgo de incumplimiento y predecir la probabilidad de que un solicitante no pague su deuda.
+This project was developed using the dataset: '[Give me some credit](https://www.kaggle.com/competitions/GiveMeSomeCredit/data)'.
+This dataset includes financial and behavioural information about credit applicants. Each row represents a person applying for a loan and includes attributes such as income, debt, payment history, number of open accounts and family size. This data allows analysis of default risk and prediction of the probability that an applicant will fail to repay their debt.
 
-| Columnas         | Nombre Simplificado   | Descripción                                                          |
-| ------------------------------------ | ---------------- | -------------------------------------------------------------------- |
-| SeriousDlqin2yrs                     | Moroso           | Variable binaria que indica si la persona no pagó su deuda por más de 90 días (1 = Sí, 0 = No)   |
-| RevolvingUtilizationOfUnsecuredLines | Uso de Crédito % | Porcentaje del crédito disponible que se está utilizando actualmente |
-| age                                  | Edad             | Edad del prestatario en años                                         |
-| NumberOfTime30-59DaysPastDueNotWorse | Retrasos 1 Mes   | Número de veces que el prestatario tuvo un retraso de 1 mes          |
-| DebtRatio                            | Deuda vs Ingreso | Deuda mensual y gastos divididos por el ingreso total                |
-| MonthlyIncome                        | Ingreso Mensual  | Ingreso mensual bruto del prestatario                                |
-| NumberOfOpenCreditLinesAndLoans      | Cuentas Abiertas | Número total de tarjetas de crédito y préstamos activos              |
-| NumberOfTimes90DaysLate              | Retrasos 3 Meses | Número de veces que el prestatario tuvo un retraso de 3 o más meses  |
-| NumberRealEstateLoansOrLines         | Hipotecas        | Número de préstamos o líneas de crédito inmobiliario                 |
-| NumberOfTime60-89DaysPastDueNotWorse | Retrasos 2 Meses | Número de veces que el prestatario tuvo un retraso de 2 meses        |
-| NumberOfDependents                   | Tamaño Familiar  | Número de dependientes (hijos, cónyuge u otros)                      |
-
-
-
-## 🧹 1. Limpieza de datos 
-
-En esta fase se llevaron a cabo diversas tareas de limpieza destinadas a mejorar la calidad y consistencia del dataset, eliminando registros inconsistentes antes del modelado. Adicionalmente, también se abordó el tratamiento de los valores nulos presentes en los datos.
+| Columns                              | Simplified Name    | Description                                                          |
+| ------------------------------------ | ------------------ | -------------------------------------------------------------------- |
+| SeriousDlqin2yrs                     | Defaulter          | Binary variable indicating whether the person failed to pay their debt for more than 90 days (1 = Yes, 0 = No) |
+| RevolvingUtilizationOfUnsecuredLines | Credit Utilisation % | Percentage of available credit currently being used               |
+| age                                  | Age                | Age of the borrower in years                                         |
+| NumberOfTime30-59DaysPastDueNotWorse | 1-Month Delays     | Number of times the borrower was 1 month late on a payment           |
+| DebtRatio                            | Debt vs Income     | Monthly debt and expenses divided by total income                    |
+| MonthlyIncome                        | Monthly Income     | Gross monthly income of the borrower                                 |
+| NumberOfOpenCreditLinesAndLoans      | Open Accounts      | Total number of active credit cards and loans                        |
+| NumberOfTimes90DaysLate              | 3-Month Delays     | Number of times the borrower was 3 or more months late on a payment  |
+| NumberRealEstateLoansOrLines         | Mortgages          | Number of real estate loans or lines of credit                       |
+| NumberOfTime60-89DaysPastDueNotWorse | 2-Month Delays     | Number of times the borrower was 2 months late on a payment          |
+| NumberOfDependents                   | Family Size        | Number of dependants (children, spouse or others)                    |
 
 
-### 1.1 Limpieza general
+
+## 🧹 1. Data Cleaning
+
+In this phase, various cleaning tasks were carried out to improve the quality and consistency of the dataset, removing inconsistent records prior to modelling. Additionally, missing values present in the data were also addressed.
 
 
-- **Depuración de `age`:** se eliminaron las observaciones con edades no plausibles, concretamente valores inferiores a 18 años y superiores a 110.  
-- **Eliminación de columnas irrelevantes:** se descartó `Unnamed: 0`, ya que únicamente correspondía a un índice residual.  
-- **Tratamiento de valores atípicos:** se detectaron registros anómalos en las variables `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse` y `NumberOfTime90DaysPastDueNotWorse`, relacionadas con históricos de impagos. Estos casos fueron eliminados para evitar distorsiones en el análisis. Los registros eliminados por esta última causa representaban solo 270 observaciones, por lo que la pérdida de información fue mínima en relación con el tamaño total del dataset.
+### 1.1 General Cleaning
 
 
-### 1.2 Datos Faltantes
+- **`age` depuration:** observations with implausible ages were removed, specifically values below 18 and above 110.
+- **Removal of irrelevant columns:** `Unnamed: 0` was discarded, as it only corresponded to a residual index.
+- **Outlier treatment:** anomalous records were detected in the variables `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse` and `NumberOfTime90DaysPastDueNotWorse`, related to payment delinquency history. These cases were removed to avoid distortions in the analysis. Records removed for this last reason represented only 270 observations, so the information loss was minimal relative to the total dataset size.
 
-Seguidamente se ha atacado el problema de los datos faltantes. En él, primeramente, hemos identificado las columnas afecvtadas, así como el grado de afectación.
 
-![Descripción](images/missing.png)
+### 1.2 Missing Data
 
-- Como se puede comprobar por el presente gráfico, las variable `MontlyIncome` y `NumberOfDependents` son las únicas que presentan missing values.
+The problem of missing data was then addressed. First, the affected columns were identified along with the extent of the impact.
+
+![Description](images/missing.png)
+
+- As shown in the chart, the variables `MonthlyIncome` and `NumberOfDependents` are the only ones with missing values.
 
 #### 1.2.1 NumberOfDependents
 
-- En primera instancia trataremos la variable `NumberOfDependents`, ya que es más intuitiva. Para entenderla mejor veámos la distribución de sus valores:
+- First, the variable `NumberOfDependents` will be addressed, as it is more intuitive. To better understand it, let us look at the distribution of its values:
   
-Dependientes | Nº de clientes
--------------|---------------
-0            | 86,705
-1            | 26,292
-2            | 19,501
-3            | 9,479
-4            | 2,860
-5            | 745
-6            | 158
-7            | 51
-8            | 24
-9            | 5
-10           | 5
-13           | 1
-20           | 1
+Dependants | No. of clients
+-----------|---------------
+0          | 86,705
+1          | 26,292
+2          | 19,501
+3          | 9,479
+4          | 2,860
+5          | 745
+6          | 158
+7          | 51
+8          | 24
+9          | 5
+10         | 5
+13         | 1
+20         | 1
 
-- La distribución de la variable muestra que la gran mayoría de los clientes presentan entre 0 y 2 dependientes, concentrando así la mayor parte de las observaciones. Asimismo, se identifican valores atípicos claros (como 10, 13 y 20 dependientes), cuya frecuencia es extremadamente baja y, por tanto, poco representativa del conjunto de datos. En consecuencia, se ha optado por eliminar estos outliers para evitar distorsiones en el análisis. Para la imputación de valores faltantes en el resto de observaciones, se ha utilizado la moda (0), al ser el valor más frecuente y representativo de la distribución.
+- The variable's distribution shows that the vast majority of customers have between 0 and 2 dependants, concentrating most observations. Clear outliers are also identified (such as 10, 13 and 20 dependants), whose frequency is extremely low and therefore not representative of the dataset. Consequently, these outliers have been removed to avoid distortions in the analysis. For imputing missing values in the remaining observations, the mode (0) was used, as it is the most frequent and representative value of the distribution.
 
-#### 1.2.1 Monthly Income
-- La variable `MonthlyIncome`, por otro lado, es más compleja de tratar, esta presenta un 19,77% y una distribución sesgada a la derecha, con algunos outliers extremos.
-- Examianamos la distribución de la variable segmentada según la condición de morosidad del cliente, habiendo recortado los outliers más evidentes:
+#### 1.2.2 Monthly Income
+- The variable `MonthlyIncome`, on the other hand, is more complex to handle; it presents 19.77% missing values and a right-skewed distribution with some extreme outliers.
+- The distribution of the variable segmented by the customer's default status is examined, having trimmed the most obvious outliers:
 
-![Descripción](images/Income-Default.png)
+![Description](images/Income-Default.png)
 
 
-- Dado que la distribución de la variable difiere entre individuos en situación de default y aquellos que no lo están, imputar los valores faltantes utilizando una medida global podría introducir sesgos y distorsionar la relación con la variable objetivo. Por ello, se opta por una imputación más robusta basada en la mediana específica de cada grupo, preservando mejor la estructura real de los datos. Adicionalmente, hemos aplicado una transformación logarítmica, lo que nos permite reducir la asimetría y el efecto de valores extremos, favoreciendo una distribución más estable y adecuada para el modelado.
+- Since the distribution of the variable differs between individuals in default and those who are not, imputing missing values using a global measure could introduce biases and distort the relationship with the target variable. Therefore, a more robust imputation based on the median specific to each group is chosen, better preserving the real structure of the data. Additionally, a logarithmic transformation was applied, which reduces skewness and the effect of extreme values, resulting in a more stable and suitable distribution for modelling.
   
 ```python
-# Realizamos primeramente una transformación logarítmica
+# First apply a logarithmic transformation
 df["MonthlyIncome_log"] = np.log1p(df["MonthlyIncome"])
 
-# Imputamos con mediana por grupo de default 
+# Impute with median by default group
 df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
                             .transform(lambda x: x.fillna(x.median()))
 ```
 
 
 
-## 📈 2. Análisis exploratorio
+## 📈 2. Exploratory Analysis
 
 
 
-### 2.1 Distribución de las variables predictoras
+### 2.1 Distribution of Predictor Variables
 
-En este aparatdo se analizó la distribución de las variables numéricas con el objetivo de comprender mejor la estructura del dataset, identificar asimetrías, detectar valores extremos y anticipar posibles necesidades de preprocesamiento antes del modelado. Para facilitar la visualización, algunas variables fueron representadas con recorte visual en el percentil 99 para que sean visualmente más agradables.
+In this section, the distribution of numerical variables was analysed with the aim of better understanding the dataset structure, identifying skewness, detecting extreme values and anticipating potential preprocessing needs before modelling. To facilitate visualisation, some variables were represented with visual trimming at the 99th percentile for a cleaner display.
 
 
 <img src="images/variables_distr.png" style="width: 1000px; height: auto;"/>
 
-**Principales observaciones:**
+**Main observations:**
 
-- Variables como `MonthlyIncome` y `DebtRatio` presentan una fuerte asimetría positiva, con alta concentración en valores bajos y una cola larga de valores extremos.  
-- `RevolvingUtilizationOfUnsecuredLines` también muestra sesgo a la derecha, con gran acumulación en valores cercanos a cero y algunos casos elevados.  
-- `age` presenta una distribución relativamente estable y cercana a una forma unimodal, concentrándose principalmente entre los 35 y 65 años.  
-- Las variables relacionadas con impagos (`NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` y `NumberOfTime60-89DaysPastDueNotWorse`) muestran una fuerte inflación en cero, indicando que la mayoría de clientes no registran retrasos recientes.  
-- Variables como `NumberRealEstateLoansOrLines`, `NumberOfOpenCreditLinesAndLoans` y `NumberOfDependents` presentan naturaleza discreta y concentraciones claras en ciertos valores enteros.
+- Variables such as `MonthlyIncome` and `DebtRatio` show strong positive skewness, with high concentration at low values and a long tail of extreme values.
+- `RevolvingUtilizationOfUnsecuredLines` also shows right skew, with a large accumulation near zero and some high-value cases.
+- `age` has a relatively stable distribution close to a unimodal shape, concentrating mainly between 35 and 65 years.
+- Variables related to delinquency (`NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` and `NumberOfTime60-89DaysPastDueNotWorse`) show strong zero-inflation, indicating that most customers have no recent payment delays.
+- Variables such as `NumberRealEstateLoansOrLines`, `NumberOfOpenCreditLinesAndLoans` and `NumberOfDependents` have a discrete nature with clear concentrations at certain integer values.
 
-**Implicaciones para el modelado:**
+**Implications for modelling:**
 
-- La presencia de asimetrías y outliers justifica el uso de técnicas robustas de escalado o transformaciones en determinadas variables.  
-- La inflación en cero observada en variables de morosidad puede aportar alta capacidad predictiva al estar estrechamente vinculada al riesgo crediticio.  
-- Este análisis resulta especialmente relevante para modelos lineales como la regresión logística, mientras que modelos basados en árboles suelen ser más robustos frente a este tipo de distribuciones.
+- The presence of skewness and outliers justifies the use of robust scaling techniques or transformations for certain variables.
+- The zero-inflation observed in delinquency variables may provide high predictive power as it is closely tied to credit risk.
+- This analysis is particularly relevant for linear models such as logistic regression, while tree-based models tend to be more robust to these types of distributions.
 
 
-### 2.2 Distribución de la variable objetivo
+### 2.2 Distribution of the Target Variable
 
-La variable objetivo presenta un marcado desbalance de clases, siendo los casos de no incumplimiento ampliamente mayoritarios frente a los eventos de default. Este comportamiento es esperable en carteras crediticias reales, donde la tasa de mora suele ser reducida. No obstante, esta asimetría puede sesgar el entrenamiento de modelos predictivos hacia la clase dominante, por lo que se tendrán en cuenta métricas robustas al desbalance y técnicas específicas como ponderación de clases o remuestreo para la fase de modelado.
+The target variable shows a marked class imbalance, with non-default cases being overwhelmingly dominant over default events. This behaviour is expected in real credit portfolios, where the delinquency rate is typically low. However, this asymmetry may bias predictive model training towards the dominant class, so imbalance-robust metrics and specific techniques such as class weighting or resampling will be used during the modelling phase.
 
 <p align="center">
   <img src="images/class_imbalance_1.png" width="500"/>
 </p>
 
 
+### 2.3 Variable Behaviour Under Risk
 
-
-
-
-
-
-
-### 2.3 Comportamiento de las variable bajo riesgo
-
-El presente apartado revela diferencias claras entre clientes con y sin incumplimiento de pago (default). En promedio, los clientes que no entran en mora presentan mayores ingresos mensuales, una edad ligeramente superior y ratios de endeudamiento más bajos, mientras que el grupo en default concentra perfiles con menor capacidad de ingresos y mayor presión financiera. Estas variables muestran una relación consistente con el riesgo crediticio, por lo que resultan especialmente relevantes para la construcción de modelos predictivos orientados a estimar la probabilidad de impago y mejorar la toma de decisiones en concesión de crédito.
+This section reveals clear differences between customers with and without payment default. On average, customers who do not default have higher monthly income, a slightly older age and lower debt ratios, while the default group concentrates profiles with lower income capacity and greater financial pressure. These variables show a consistent relationship with credit risk, making them particularly relevant for building predictive models aimed at estimating default probability and improving decision-making in credit granting.
 
 <p align="center">
   <img src="images/mean_diff.png" width="800"/>
 </p>
 
 
-### 2.4 Historial de mora e impago 
+### 2.4 Delinquency and Default History
 
-El historial de mora muestra una relación clara y creciente con el riesgo de impago. En las tres variables analizadas (retrasos de 30–59, 60–89 y más de 90 días), los clientes que entraron en default presentan una mayor proporción de incidencias previas que aquellos sin impago. Además, la tasa de default aumenta de forma consistente conforme crece el número de atrasos registrados, especialmente en los retrasos más severos (+90 días), donde se observa la mayor capacidad discriminante. Estos resultados confirman que el comportamiento de pago pasado es uno de los predictores más relevantes dentro del riesgo de crédito.
+The delinquency history shows a clear and increasing relationship with default risk. Across the three variables analysed (30–59, 60–89 and over 90-day delays), customers who defaulted show a higher proportion of prior incidents than those without default. Furthermore, the default rate increases consistently as the number of recorded delays grows, especially for severe delays (+90 days), where the greatest discriminative power is observed. These results confirm that past payment behaviour is one of the most relevant predictors within credit risk.
 
 <p align="center">
   <img src="images/late_payments.png" width="800"/>
@@ -182,117 +175,117 @@ El historial de mora muestra una relación clara y creciente con el riesgo de im
 
 
 
-### 2.5 Análisis por grupos de edad
+### 2.5 Analysis by Age Group
 
-Este análisis explora la relación entre la edad de los clientes y su comportamiento crediticio, con foco en la probabilidad de default y los distintos niveles de morosidad. A través de la segmentación por grupos etarios, se busca identificar patrones de riesgo que permitan mejorar la capacidad predictiva del modelo de credit risk.
+This analysis explores the relationship between customers' age and their credit behaviour, focusing on default probability and different levels of delinquency. Through segmentation by age groups, the aim is to identify risk patterns that can improve the predictive capacity of the credit risk model.
   
 <p align="center">
   <img src="images/age_group_analysis.png" width="700"/>
 </p>
 
-La gráfica muestra una clara concentración del riesgo en los grupos de edad intermedia, especialmente entre 36 y 55 años, donde se observan las tasas más altas tanto de default como de retrasos en distintos rangos (30–59 y 60–89 días). El grupo de 46–55 años destaca como el segmento con mayor volumen de incumplimientos y morosidad acumulada, lo que sugiere una combinación de mayor exposición crediticia y potenciales tensiones financieras. En contraste, los segmentos más jóvenes (18–25) y mayores (65+) presentan niveles significativamente más bajos de incumplimiento, lo que puede estar asociado a menor acceso al crédito o a comportamientos más conservadores. 
+The chart shows a clear concentration of risk in middle-age groups, especially between 36 and 55 years, where the highest rates of both default and delays across different ranges (30–59 and 60–89 days) are observed. The 46–55 age group stands out as the segment with the highest volume of defaults and accumulated delinquency, suggesting a combination of greater credit exposure and potential financial stress. In contrast, the younger (18–25) and older (65+) segments show significantly lower levels of default, which may be associated with lower credit access or more conservative behaviour.
 
-### 2.6 Correlaciones
-- Por último, se examina la matriz de correlación con el objetivo de identificar qué variables presentan mayor asociación con la variable objetivo SeriousDlqin2yrs, así como posibles problemas de multicolinealidad entre features. Este análisis resulta especialmente útil para entender qué señales aportan mayor valor predictivo y para orientar tanto la selección de variables como la construcción de nuevas transformaciones que mejoren el rendimiento y la interpretabilidad del modelo.
+### 2.6 Correlations
+- Finally, the correlation matrix is examined with the aim of identifying which variables show the greatest association with the target variable SeriousDlqin2yrs, as well as potential multicollinearity issues between features. This analysis is particularly useful for understanding which signals provide the most predictive value and for guiding both variable selection and the construction of new transformations to improve model performance and interpretability.
   
 <p align="center">
   <img src="images/Corr.png" width="600"/>
 </p>
 
-**Observaciones**
-- El análisis de correlaciones muestra que la variable objetivo SeriousDlqin2yrs (default) está principalmente asociada con indicadores de comportamiento de pago atrasado, destacando weighted_late_score, TotalPastDue y NumberOfTimes90DaysLate, que presentan las correlaciones positivas más elevadas. Esto confirma que el historial de morosidad reciente es el principal driver del riesgo de incumplimiento.
-- Variables derivadas como HasSeriousDelinquency y los distintos contadores de retrasos (30-59 y 60-89 días) también refuerzan esta señal, evidenciando una estructura coherente entre features relacionadas. Por otro lado, variables como age y CreditHistoryLength muestran correlaciones negativas moderadas, sugiriendo que perfiles más maduros y con mayor historial crediticio tienden a presentar menor probabilidad de default.
-- En contraste, variables financieras clásicas como DebtRatio o MonthlyIncome tienen una relación débil con la variable objetivo, lo que sugiere que, en este dataset, el comportamiento histórico es mucho más predictivo que la capacidad económica declarada. Finalmente, se observa cierta multicolinealidad entre variables derivadas de morosidad, lo cual se tendrá en cuenta en fases posteriores de modelado para evitar redundancias y mejorar la interpretabilidad del modelo.
+**Observations**
+- The correlation analysis shows that the target variable SeriousDlqin2yrs (default) is primarily associated with late payment behaviour indicators, with `weighted_late_score`, `TotalPastDue` and `NumberOfTimes90DaysLate` showing the highest positive correlations. This confirms that recent delinquency history is the main driver of default risk.
+- Derived variables such as `HasSeriousDelinquency` and the various delay counters (30–59 and 60–89 days) also reinforce this signal, evidencing a coherent structure among related features. On the other hand, variables such as `age` and `CreditHistoryLength` show moderate negative correlations, suggesting that more mature profiles with a longer credit history tend to have a lower probability of default.
+- In contrast, classic financial variables such as `DebtRatio` or `MonthlyIncome` have a weak relationship with the target variable, suggesting that in this dataset, historical behaviour is far more predictive than declared economic capacity. Finally, some multicollinearity is observed among delinquency-derived variables, which will be taken into account in later modelling phases to avoid redundancy and improve model interpretability.
 
 
-## 🧩 3. Ingeniería de variables (Feature Engineering)
+## 🧩 3. Feature Engineering
 
-Esta sección resume las variables derivadas creadas con el objetivo de mejorar la capacidad predictiva del modelo de riesgo de crédito. Las transformaciones se centran en capturar la capacidad de pago, el comportamiento histórico del cliente y su segmentación.
+This section summarises the derived variables created with the aim of improving the predictive capacity of the credit risk model. The transformations focus on capturing payment capacity, the customer's historical behaviour and their segmentation.
 
 
 
-| Variable                | Tipo        | Descripción                                                                 | Intuición de riesgo                          |
+| Variable                | Type        | Description                                                                 | Risk Intuition                               |
 | ----------------------- | ----------- | --------------------------------------------------------------------------- | -------------------------------------------- |
-| `income_per_dependent`  | Numérica    | Ingreso mensual dividido por número de dependientes (+1 para evitar división por cero) | Menor valor → mayor carga financiera         |
-| `utilization_capped`    | Numérica    | Utilización de crédito acotada entre 0 y 1                                  | Reduce el impacto de valores extremos        |
-| `CreditHistoryLength`   | Numérica    | Edad - 18 (aproximación a la antigüedad crediticia)                         | Mayor antigüedad → menor riesgo              |
-| `TotalPastDue`          | Numérica    | Número total de retrasos en pagos                                           | Más retrasos → mayor riesgo                  |
-| `weighted_late_score`   | Numérica    | Puntuación ponderada de retrasos según gravedad                             | Penaliza más los impagos severos             |
-| `HasSeriousDelinquency` | Binaria     | 1 si existe algún retraso >90 días                                          | Fuerte indicador de default                  |
-| `high_utilization_flag` | Binaria     | 1 si la utilización de crédito >80%                                         | Alta utilización → mayor riesgo              |
-| `AgeGroup`              | Categórica  | Edad agrupada en rangos                                                     | Captura efectos del ciclo de vida            |
-| `IncomeGroup`           | Categórica  | Cuartiles de ingreso                                                        | Segmentación socioeconómica                  |
-| `DTICategory`           | Categórica  | Categorías del ratio deuda/ingresos (DTI)                                   | Mayor DTI → menor capacidad de pago          |
+| `income_per_dependent`  | Numerical   | Monthly income divided by number of dependants (+1 to avoid division by zero) | Lower value → greater financial burden     |
+| `utilization_capped`    | Numerical   | Credit utilisation capped between 0 and 1                                   | Reduces the impact of extreme values         |
+| `CreditHistoryLength`   | Numerical   | Age - 18 (approximation of credit history length)                           | Longer history → lower risk                  |
+| `TotalPastDue`          | Numerical   | Total number of payment delays                                              | More delays → higher risk                    |
+| `weighted_late_score`   | Numerical   | Weighted score of delays by severity                                        | Penalises severe delinquencies more heavily  |
+| `HasSeriousDelinquency` | Binary      | 1 if there is any delay >90 days                                            | Strong indicator of default                  |
+| `high_utilization_flag` | Binary      | 1 if credit utilisation >80%                                                | High utilisation → higher risk               |
+| `AgeGroup`              | Categorical | Age grouped into ranges                                                     | Captures life-cycle effects                  |
+| `IncomeGroup`           | Categorical | Income quartiles                                                            | Socioeconomic segmentation                   |
+| `DTICategory`           | Categorical | Debt-to-income ratio (DTI) categories                                       | Higher DTI → lower repayment capacity        |
 
-## 📊 4. Desarrollo de los modelos de ML
+## 📊 4. ML Model Development
 
-Como se ha comentado previamente, el dataset presenta un marcado desbalanceo de clases (93% no-default / 7% default), lo que dificulta de forma significativa la identificación de la clase minoritaria (default).
-En este contexto, métricas como la accuracy global pueden resultar engañosas, ya que un modelo que predijera siempre la clase mayoritaria (no default) alcanzaría un 93% de accuracy sin aportar valor real al problema. Por este motivo, la optimización del modelo se centró en el F1-Score de la clase 1, métrica que combina de forma equilibrada la precisión y el recall.
-Adicionalmente, se estableció como restricción un recall mínimo del 65%, con el objetivo de garantizar la detección de al menos dos tercios de los casos reales de default.
-Por último, también se consideró el AUC-PR (Area Under the Precision-Recall Curve), especialmente relevante en escenarios de fuerte desbalanceo de clases.
+As previously mentioned, the dataset presents a marked class imbalance (93% non-default / 7% default), which significantly hinders the identification of the minority class (default).
+In this context, metrics such as overall accuracy can be misleading, as a model that always predicted the majority class (non-default) would achieve 93% accuracy without providing any real value. For this reason, model optimisation focused on the F1-Score of class 1, a metric that combines precision and recall in a balanced way.
+Additionally, a minimum recall of 65% was set as a constraint, with the aim of ensuring detection of at least two thirds of real default cases.
+Finally, AUC-PR (Area Under the Precision-Recall Curve) was also considered, which is especially relevant in scenarios with strong class imbalance.
 
-Se evaluaron distintos modelos para abordar el problema de clasificación, entre los que destacan:
+Several models were evaluated to address the classification problem, among which the following stand out:
 
-- Regresión Logística, utilizada como modelo baseline para establecer una referencia inicial de rendimiento.
-- XGBoost, considerado como una alternativa más avanzada y con mayor capacidad predictiva.
-- También se analizaron otros enfoques, como LightGBM y Random Forest; no obstante, XGBoost fue el modelo que obtuvo los mejores resultados en las métricas evaluadas..
+- Logistic Regression, used as a baseline model to establish an initial performance benchmark.
+- XGBoost, considered as a more advanced alternative with greater predictive capacity.
+- Other approaches such as LightGBM and Random Forest were also analysed; however, XGBoost was the model that achieved the best results across the evaluated metrics.
 
 ---
 
 
-### 4.1 Regresión Logística *(baseline)*
+### 4.1 Logistic Regression *(baseline)*
 
-En primera instancia, como es común en la literatura para este tipo de problemática, hemos ajustado un modelo de regresión logística. Debido a la problemática del desbalanceo de clase, el modelo ha sido construído ajustado los pesos convenientemente. 
+As a first step, as is common in the literature for this type of problem, a logistic regression model was fitted. Due to the class imbalance problem, the model was built with appropriately adjusted weights.
 
-| Métrica   | Clase 0 (no-default) | Clase 1 (default) |
-|-----------|----------------------|-------------------|
-| Precision | 0.97                 | 0.26              |
-| Recall    | 0.87                 | 0.65              |
-| F1-Score  | 0.92                 | 0.37              |
+| Metric    | Class 0 (non-default) | Class 1 (default) |
+|-----------|-----------------------|-------------------|
+| Precision | 0.97                  | 0.26              |
+| Recall    | 0.87                  | 0.65              |
+| F1-Score  | 0.92                  | 0.37              |
 | **AUC-PR** | **0.8508** | **Threshold: 0.5800** |
 
-Evaluados múltiples modelos, el que ha obtenido un mejor resultado alcanza un AUC-PR de 0.8508 con un umbral óptimo de 0.58. Para la clase minoritaria (default), el modelo alcanza el máximo f1-Score al recall mínimo exigido del 65%, cumpliendo así el objetivo de detectar una parte relevante de los casos reales. Sin embargo, este resultado se obtiene con una precisión de apenas 0.26, lo que implica que solo 1 de cada 4 clientes clasificados como default realmente lo es. En consecuencia, el modelo genera un volumen elevado de falsos positivos, produciendo aproximadamente el triple de alertas incorrectas por cada acierto. Su F1-Score de 0.37 confirma una baja capacidad de discriminación, por lo que este modelo servirá únicamente como referencia comparativa frente a enfoques más sofisticados.
+After evaluating multiple models, the best-performing one achieves an AUC-PR of 0.8508 with an optimal threshold of 0.58. For the minority class (default), the model reaches the maximum F1-Score at the minimum required recall of 65%, thus meeting the objective of detecting a relevant proportion of real cases. However, this result is achieved with a precision of only 0.26, meaning that only 1 in 4 customers classified as default actually is. Consequently, the model generates a high volume of false positives, producing approximately three incorrect alerts for every correct one. Its F1-Score of 0.37 confirms low discriminative capacity, so this model will serve only as a comparative reference against more sophisticated approaches.
 
 ---
 
-### 4.2 XGBoost *(modelo final)*
+### 4.2 XGBoost *(final model)*
 
-Como segunda aproximación, se ha entrenado un modelo XGBoost con ajuste de hiperparámetros mediante validación cruzada aleatorizada (RandomCV). Comparado con el baseline, supera al modelo logístico en todas las métricas relevantes:
+As a second approach, an XGBoost model was trained with hyperparameter tuning via randomised cross-validation (RandomCV). Compared to the baseline, it outperforms the logistic model on all relevant metrics:
 
-| Métrica   | Clase 0 (no-default) | Clase 1 (default) |
-|-----------|----------------------|-------------------|
-| Precision | 0.97                 | 0.40              |
-| Recall    | 0.93                 | 0.66              |
-| F1-Score  | 0.95                 | 0.50              |
+| Metric    | Class 0 (non-default) | Class 1 (default) |
+|-----------|-----------------------|-------------------|
+| Precision | 0.97                  | 0.40              |
+| Recall    | 0.93                  | 0.66              |
+| F1-Score  | 0.95                  | 0.50              |
 | **AUC-PR** | **0.9021** | **Threshold: 0.3268** |
 
-Este modelo requirió bajar el threshold de decisión hasta **0.3268** (muy por debajo del 0.5 por defecto) para alcanzar el recall objetivo. Esto refleja que el modelo, entrenado sobre datos desbalanceados, tiende a asignar probabilidades bajas a la clase minoritaria, y es necesario reducir el umbral de clasificación para capturar más defaults reales. 
+This model required lowering the decision threshold to **0.3268** (well below the default 0.5) to achieve the target recall. This reflects that the model, trained on imbalanced data, tends to assign low probabilities to the minority class, and the classification threshold must be reduced to capture more real defaults.
 
-Con este ajuste, el modelo detecta el **66% de los defaults reales** (recall), con una precisión asociada del 40%: es decir, de cada 10 clientes clasificados como default, 6 lo son realmente y 4 son falsas alarmas. Este trade-off es habitual y generalmente aceptable en contextos de riesgo crediticio, donde el coste de no detectar un default supera ampliamente al de investigar una falsa alarma. El **F1-Score de 0.50** refleja este equilibrio en un escenario de alta dificultad. Adicionalmente, el modelado arroja un AUC-PR de 0.9021.
+With this adjustment, the model detects **66% of real defaults** (recall), with an associated precision of 40%: that is, out of every 10 customers classified as default, 6 actually are and 4 are false alarms. This trade-off is common and generally acceptable in credit risk contexts, where the cost of missing a default far exceeds that of investigating a false alarm. The **F1-Score of 0.50** reflects this balance in a highly challenging scenario. Additionally, the model yields an AUC-PR of 0.9021.
 
 ---
 
-### 4.3 Comparativa y conclusión
+### 4.3 Comparison and Conclusion
 
-| Modelo               | Threshold | Precision (c1) | Recall (c1) | F1 (c1) | AUC-PR |
-|----------------------|-----------|----------------|-------------|---------|----------|
+| Model                | Threshold | Precision (c1) | Recall (c1) | F1 (c1) | AUC-PR |
+|----------------------|-----------|----------------|-------------|---------|--------|
 | **XGBoost**          | 0.3268    | **0.40**       | **0.66**    | **0.50**| **0.90** |
-| Regresión Logística  | 0.5800    | 0.26           | 0.65        | 0.37    | 0.85     |
+| Logistic Regression  | 0.5800    | 0.26           | 0.65        | 0.37    | 0.85   |
 
-La mejora más significativa recae en la precision (+14 p.p.), que se traduce en un F1-Score un 35% superior (0.50 vs. 0.37) y un AUC-PR 5 puntos mayor, manteniendo un recall prácticamente idéntico. En otras palabras, XGBoost detecta la misma proporción de defaults reales generando considerablemente menos falsas alarmas.
-En un contexto de credit scoring, esta diferencia tiene implicaciones prácticas directas: una lista de clientes en riesgo más depurada reduce los costes operativos de revisión manual y evita fricciones innecesarias con clientes que no habrían incurrido en impago. Por todo ello, XGBoost se selecciona como modelo final del proyecto.
+The most significant improvement lies in precision (+14 p.p.), which translates into an F1-Score 35% higher (0.50 vs. 0.37) and an AUC-PR 5 points greater, while maintaining virtually identical recall. In other words, XGBoost detects the same proportion of real defaults while generating considerably fewer false alarms.
+In a credit scoring context, this difference has direct practical implications: a more refined list of at-risk customers reduces operational review costs and avoids unnecessary friction with customers who would not have defaulted. For all these reasons, XGBoost is selected as the final model for the project.
 
-## 🔧 5. Importancia de las variables
+## 🔧 5. Feature Importance
 
-Para garantizar la transparencia del modelo final (XGBoost), se aplicaron tres técnicas de interpretabilidad complementarias: **Feature Importance (Gain)** para una visión global del poder predictivo de cada variable,  **LIME** para explicaciones a nivel de instancia individual y **SHAP** para entender el impacto direccional de cada feature sobre las predicciones.
+To ensure transparency of the final model (XGBoost), three complementary interpretability techniques were applied: **Feature Importance (Gain)** for a global view of each variable's predictive power, **LIME** for explanations at the individual instance level, and **SHAP** to understand the directional impact of each feature on predictions.
 
-Las tres técnicas convergen en una conclusión clara: el comportamiento histórico de pago del cliente es, con diferencia, el factor más determinante para predecir el default.
+All three techniques converge on a clear conclusion: the customer's historical payment behaviour is, by far, the most determining factor in predicting default.
 
 ---
 
-### 5.1 Importancia en el gain
+### 5.1 Gain-Based Importance
 
-El gráfico de importancia por ganancia refleja cuánto contribuye cada variable a reducir la impureza en los árboles del modelo. Las dos features dominantes son `weighted_late_score` y `TotalPastDue`, con una importancia notablemente superior al resto —prácticamente el doble que la tercera variable más relevante—, lo que indica que el modelo se apoya de forma muy intensa en el historial de pagos tardíos del cliente. A continuación aparecen `HasSeriousDelinquency` y `NumberOfTimes90DaysLate`, que refuerzan la misma señal: los retrasos graves y reiterados son el predictor más robusto de default. En un segundo nivel de importancia se sitúan `high_utilization_flag` y `utilization_capped`, indicando que el nivel de utilización del crédito disponible también aporta información valiosa, aunque bastante por debajo de las variables de morosidad. El resto de features —ingresos, ratio deuda/ingreso, número de líneas abiertas— contribuyen de forma marginal en términos de ganancia.
+The gain importance chart reflects how much each variable contributes to reducing impurity in the model's trees. The two dominant features are `weighted_late_score` and `TotalPastDue`, with noticeably higher importance than the rest — roughly twice that of the third most relevant variable — indicating that the model relies very heavily on the customer's late payment history. Next come `HasSeriousDelinquency` and `NumberOfTimes90DaysLate`, which reinforce the same signal: severe and repeated delays are the most robust predictor of default. At a secondary level of importance are `high_utilization_flag` and `utilization_capped`, indicating that the level of available credit utilisation also provides valuable information, though well below the delinquency variables. The remaining features — income, debt-to-income ratio, number of open lines — contribute marginally in terms of gain.
 
 ---
 
@@ -300,9 +293,9 @@ El gráfico de importancia por ganancia refleja cuánto contribuye cada variable
   <img src="images/Features_xgb.png" width="600"/>
 </p>
 
-### 5.2 Lime
+### 5.2 LIME
 
-La explicación LIME corresponde a una instancia concreta clasificada como **Default** y permite entender qué factores llevaron al modelo a esa decisión particular. La variable con mayor peso negativo (empujando hacia default) es `MonthlyIncome_missing <= 0`, confirmando que la ausencia del dato de ingresos es la señal individual más determinante en este caso. Le siguen `MonthlyIncome > 7403` y `weighted_late_score <= 0`, lo que puede parecer contraintuitivo —ingresos altos empujando hacia default— pero se explica porque LIME analiza combinaciones locales de condiciones: en este perfil específico, otros factores de riesgo prevalecen sobre el nivel de ingresos. `TotalPastDue <= 0` y `MonthlyIncome_log > 8.91` también contribuyen negativamente. En sentido contrario, `high_utilization_flag <= 0` y `NumberRealEstateLoansOrLines > 2` actúan como ligeros factores de mitigación del riesgo para esta instancia concreta.
+The LIME explanation corresponds to a specific instance classified as **Default** and allows us to understand which factors led the model to that particular decision. The variable with the greatest negative weight (pushing towards default) is `MonthlyIncome_missing <= 0`, confirming that the absence of income data is the most determining individual signal in this case. This is followed by `MonthlyIncome > 7403` and `weighted_late_score <= 0`, which may seem counterintuitive — high income pushing towards default — but is explained by the fact that LIME analyses local combinations of conditions: in this specific profile, other risk factors prevail over income level. `TotalPastDue <= 0` and `MonthlyIncome_log > 8.91` also contribute negatively. In the opposite direction, `high_utilization_flag <= 0` and `NumberRealEstateLoansOrLines > 2` act as slight risk-mitigating factors for this particular instance.
 
 ---
 
@@ -310,11 +303,11 @@ La explicación LIME corresponde a una instancia concreta clasificada como **Def
   <img src="images/Lime_xgb.png" width="600"/>
 </p>
 
-### 5.3 Shap
+### 5.3 SHAP
 
-El análisis SHAP complementa la importancia por ganancia añadiendo la **dirección** del efecto de cada variable sobre la probabilidad de default. `weighted_late_score` vuelve a liderar: valores altos (en rojo) se asocian a SHAP values positivos, empujando la predicción hacia default, mientras que valores bajos reducen el riesgo. `TotalPastDue` muestra un patrón similar aunque con menor dispersión, y `utilization_capped` también impacta positivamente cuando es elevada.
+The SHAP analysis complements gain-based importance by adding the **direction** of each variable's effect on the default probability. `weighted_late_score` again leads: high values (in red) are associated with positive SHAP values, pushing the prediction towards default, while low values reduce risk. `TotalPastDue` shows a similar pattern though with less dispersion, and `utilization_capped` also has a positive impact when elevated.
 
-Un hallazgo especialmente relevante es el comportamiento de `MonthlyIncome_missing`: la ausencia de datos de ingresos genera SHAP values fuertemente positivos (mayor riesgo de default), lo que sugiere que la falta de información sobre ingresos es en sí misma una señal de riesgo que el modelo ha aprendido a explotar. En sentido contrario, valores altos de `MonthlyIncome` actúan como factor protector, empujando las predicciones hacia no-default. La variable `age` muestra un efecto protector moderado para clientes de mayor edad, consistente con la literatura de riesgo crediticio.
+A particularly relevant finding is the behaviour of `MonthlyIncome_missing`: the absence of income data generates strongly positive SHAP values (higher default risk), suggesting that the lack of income information is itself a risk signal that the model has learned to exploit. Conversely, high values of `MonthlyIncome` act as a protective factor, pushing predictions towards non-default. The variable `age` shows a moderate protective effect for older customers, consistent with the credit risk literature.
 
 ---
 
@@ -325,17 +318,17 @@ Un hallazgo especialmente relevante es el comportamiento de `MonthlyIncome_missi
 
 
 
-> Las tres técnicas de interpretabilidad son consistentes entre sí y apuntan al mismo núcleo explicativo: **el historial de pagos tardíos y la morosidad acumulada son los predictores dominantes del default**, seguidos a distancia por el nivel de utilización del crédito y la disponibilidad de información sobre ingresos. Esta coherencia entre métodos globales y locales refuerza la confianza en el modelo y facilita su potencial uso en entornos regulados donde la explicabilidad de las decisiones crediticias es un requisito.
+> All three interpretability techniques are consistent with each other and point to the same explanatory core: **late payment history and accumulated delinquency are the dominant predictors of default**, followed at a distance by credit utilisation level and the availability of income information. This coherence between global and local methods reinforces confidence in the model and facilitates its potential use in regulated environments where the explainability of credit decisions is a requirement.
 
 
-## ➡️ 6. Próximos pasos
+## ➡️ 6. Next Steps
 
-- Ampliación del EDA.
-- Técnicas de balanceo más avanzadas como SMOTE o undersampling.
-- Optimización enfocada en métricas de negocio:
-  - Recall: evaluar en términos monetarios el grado exacto de
-  - Precisión: evaluar que tan costoso es incurrir en falsos positivos.
-- Ensemble de modelos.
+- Expansion of the EDA.
+- More advanced balancing techniques such as SMOTE or undersampling.
+- Optimisation focused on business metrics:
+  - Recall: evaluate in monetary terms the exact degree of missed defaults.
+  - Precision: evaluate how costly it is to incur false positives.
+- Model ensembling.
 
 
 ---
