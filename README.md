@@ -156,7 +156,31 @@ The target variable shows a marked class imbalance, with non-default cases being
 </p>
 
 
-### 2.3 Variable Behaviour Under Risk
+### 2.3 Default Behavior Analysis
+
+Under this section, the analysis focuses on understanding how the likelihood of default changes across different customer groups and financial profiles. The study includes the estimation of the mean default rate together with both parametric (95% normal confidence intervals) and non-parametric (bootstrap confidence intervals) uncertainty estimates, providing a more robust view of risk behavior. In addition, differences between key segments — such as age ranges, income levels, delinquency history, and credit exposure — are explored to identify patterns associated with higher default probability. To complement the visual analysis, statistical techniques including Levene’s test and Cliff’s Delta are applied to evaluate variance differences and effect sizes between groups, helping distinguish statistically meaningful relationships from purely descriptive patterns.
+
+#### 2.3.1 COnfidence Interval
+
+To quantify the uncertainty around the estimated default rate, we compute a 95% confidence interval using the Wilson method, which provides better performance than the normal approximation, especially for proportions close to 0 or 1 or when class imbalance is present. This interval gives a statistically robust range for the true population default rate based on the observed sample.
+
+In addition to the analytical approach, we also estimate confidence intervals using bootstrap resampling. This method repeatedly samples from the dataset with replacement and recalculates the default rate, allowing us to empirically approximate its sampling distribution. The resulting interval does not rely on strong parametric assumptions and is therefore particularly useful for validating the robustness of the analytical estimate.
+
+Together, both approaches provide complementary perspectives: the Wilson interval offers a closed-form statistical estimate, while bootstrap methods provide a data-driven, assumption-light validation of uncertainty.
+
+<p align="center">
+  <img src="images/bootstrap_default.png" width="800"/>
+</p>
+
+The estimated mean default rate in the dataset is **0.0660**, indicating that approximately 6.6% of the observed individuals are classified as defaulters.
+
+To quantify the uncertainty of this estimate, we compute a 95% confidence interval using the Wilson method, obtaining a range of **[0.0647, 0.0672]**. This provides a precise analytical estimate of the true population default rate.
+
+To validate the robustness of this result, we also apply a bootstrap approach, which yields a very similar 95% confidence interval of **[0.0647, 0.0674]**. The close agreement between both intervals reinforces the stability of the estimated default rate and suggests that the result is not sensitive to the underlying assumptions of the analytical method.
+
+Overall, both methods consistently indicate a low and tightly concentrated default rate in the dataset.
+
+#### 2.3.2 Feature Distribution by Default Status
 
 This section reveals clear differences between customers with and without payment default. On average, customers who do not default have higher monthly income, a slightly older age and lower debt ratios, while the default group concentrates profiles with lower income capacity and greater financial pressure. These variables show a consistent relationship with credit risk, making them particularly relevant for building predictive models aimed at estimating default probability and improving decision-making in credit granting.
 
@@ -164,18 +188,22 @@ This section reveals clear differences between customers with and without paymen
   <img src="images/feature_distr_default.png" width="800"/>
 </p>
 
+Comparison of key financial features between defaulting and non-defaulting borrowers reveals meaningful differences across all variables analyzed. Non-defaulters show a higher average revolving utilization of unsecured lines (~6.1 vs ~4.4), a higher monthly income (~$6,500 vs ~$5,500), and a higher debt ratio (~360 vs ~300), suggesting that defaulters tend to have a weaker overall financial profile despite lower absolute exposure. Age also differs notably: non-defaulters have a higher median age (~52) compared to defaulters (~46), consistent with the findings from the age-group analysis. While distributions are heavily right-skewed and contain extreme outliers across all features, the mean differences are statistically distinguishable, making these variables relevant predictors for credit risk modeling.
 
-### 2.4 Delinquency and Default History
 
-The delinquency history shows a clear and increasing relationship with default risk. Across the three variables analysed (30–59, 60–89 and over 90-day delays), customers who defaulted show a higher proportion of prior incidents than those without default. Furthermore, the default rate increases consistently as the number of recorded delays grows, especially for severe delays (+90 days), where the greatest discriminative power is observed. These results confirm that past payment behaviour is one of the most relevant predictors within credit risk.
+#### 2.3.3 Delinquency and Default History
+
+A borrower's history of late payments is often considered one of the most direct signals of future credit risk. The following analysis examines how the frequency of past delinquencies — across three severity buckets — relates to the likelihood of serious default, revealing a clear and consistent escalation in risk with each additional missed payment.
 
 <p align="center">
   <img src="images/delinquency_history.png" width="800"/>
 </p>
 
 
+Past delinquency behavior proves to be one of the strongest indicators of future default risk. Across all three delinquency buckets — 30–59, 60–89, and 90+ days past due — defaulters show a substantially higher proportion of clients with at least one recorded delay compared to non-defaulters. The default probability curves further confirm a steep, monotonic increase with the number of delays: even a single 60–89 day late event raises the default probability to roughly 50%, and borrowers with repeated 90+ day delinquencies face default rates exceeding 65%. These patterns highlight delinquency history as a critical feature that should be prioritized in any predictive credit risk model.
 
-### 2.5 Analysis by Age Group
+
+### 2.4 Analysis by Age Group
 
 This analysis explores the relationship between customers' age and their credit behaviour, focusing on default probability and different levels of delinquency. Through segmentation by age groups, the aim is to identify risk patterns that can improve the predictive capacity of the credit risk model.
   
@@ -189,7 +217,7 @@ The chart shows a clear concentration of risk in middle-age groups, especially b
   <img src="images/composite_risk_index.png" width="700"/>
 </p>
 
-### 2.6 Correlations
+### 2.5 Correlations
 - Finally, the correlation matrix is examined with the aim of identifying which variables show the greatest association with the target variable SeriousDlqin2yrs, as well as potential multicollinearity issues between features. This analysis is particularly useful for understanding which signals provide the most predictive value and for guiding both variable selection and the construction of new transformations to improve model performance and interpretability.
   
 <p align="center">
