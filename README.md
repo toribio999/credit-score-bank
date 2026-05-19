@@ -261,6 +261,8 @@ This section summarises the derived variables created with the aim of improving 
 | `IncomeGroup`           | Categorical | Income quartiles                                                            | Socioeconomic segmentation                   |
 | `DTICategory`           | Categorical | Debt-to-income ratio (DTI) categories                                       | Higher DTI → lower repayment capacity        |
 
+Basic ratios such as `income_per_dependent` and `utilization_capped` adjust raw figures to reflect real financial pressure — the former accounts for household obligations, the latter clips reporting anomalies to a meaningful `[0, 1]` range. Delinquency is represented at three levels of granularity: a raw count (`TotalPastDue`), a severity-weighted score (`weighted_late_score`) that penalizes 90+ day lates more heavily than shorter delays, and a binary flag (`HasSeriousDelinquency`) that makes the critical threshold explicit for tree-based models. A high utilization flag encodes the industry-recognized >80% risk threshold as a discrete signal. Finally, age, income, and debt-to-income ratio are discretized into ordered categories — grounded in standard lending guidelines — to capture non-linear relationships and improve model interpretability for business stakeholders.
+
 ## 📊 4. ML Model Development
 
 As previously mentioned, the dataset presents a marked class imbalance (93% non-default / 7% default), which significantly hinders the identification of the minority class (default).
