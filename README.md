@@ -123,7 +123,7 @@ df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
 
 ## 📈 2. Exploratory Analysis
 
-
+The Exploratory Data Analysis (EDA) phase was conducted to gain a comprehensive understanding of the dataset and identify the key factors associated with credit default risk. This stage involved examining the distribution of variables, detecting missing values and outliers, analyzing relationships between features and the target variable, and assessing potential patterns within the data. Given the highly imbalanced nature of the dataset, special attention was paid to understanding the characteristics of defaulted and non-defaulted customers. The insights obtained during this analysis guided feature engineering decisions, data preprocessing strategies, and the subsequent development of predictive machine learning models
 
 ### 2.1 Variable Distribution Analysis
 
