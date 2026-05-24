@@ -277,7 +277,18 @@ A baseline Logistic Regression model was first implemented to establish a refere
 The objective of this stage is not only to maximise predictive performance, but also to ensure that the final model provides a robust and reliable separation between default and non-default cases, suitable for real-world credit risk applications.
 
 
-### 4.1 Logistic Regression *(baseline)*
+### 4.1 Evaluation Strategy and Threshold Optimization
+
+The dataset exhibits a strong class imbalance (93% non-default vs 7% default), making accuracy an unreliable evaluation metric, as a naïve model predicting only the majority class would still achieve 93% accuracy without any predictive value.
+
+For this reason, model optimisation focused on the F1-score of the positive class (defaults), as it provides a balanced trade-off between precision and recall in imbalanced classification problems.
+
+In addition, a minimum recall constraint of 0.65 was introduced to ensure that at least two-thirds of actual default cases are correctly identified, reflecting the importance of reducing missed risky borrowers in a credit risk context.
+
+Finally, AUC-PR (Area Under the Precision-Recall Curve) was used as a complementary evaluation metric, as it provides a more informative view of model performance under severe class imbalance.
+
+
+### 4.2 Logistic Regression *(baseline)*
 
 As a first step, as is common in the literature for this type of problem, a logistic regression model was fitted. Due to the class imbalance problem, the model was trained with balanced class weights (`class_weight='balanced'`).
 
@@ -292,7 +303,7 @@ After evaluating multiple models, the best-performing one achieves an AUC-PR of 
 
 ---
 
-### 4.2 XGBoost *(final model)*
+### 4.3 XGBoost *(final model)*
 
 As a second approach, an XGBoost classifier was developed and optimised through randomized hyperparameter search with cross-validation. Designed to capture complex non-linear relationships in the data, the model substantially outperformed the Logistic Regression baseline across all key evaluation metrics.
 
@@ -311,15 +322,22 @@ The most significant improvement lies in precision (+14 p.p.), which translates 
 In a credit scoring context, this difference has direct practical implications: a more refined list of at-risk customers reduces operational review costs and avoids unnecessary friction with customers who would not have defaulted. For all these reasons, XGBoost is selected as the final model for the project.
 
 
-### 4.3 Evaluation Strategy and Threshold Optimization
+### 4.4 AUC-PR Curves
 
-The dataset exhibits a strong class imbalance (93% non-default vs 7% default), making accuracy an unreliable evaluation metric, as a naïve model predicting only the majority class would still achieve 93% accuracy without any predictive value.
+Both models were evaluated using the Precision-Recall curve, which is more informative
+than ROC in the presence of class imbalance, as it focuses on the model's ability to
+correctly identify the minority class.
 
-For this reason, model optimisation focused on the F1-score of the positive class (defaults), as it provides a balanced trade-off between precision and recall in imbalanced classification problems.
+<p align="center">
+  <img src="images/AUC-PR_Curve.png" width="600"/>
+</p>
 
-In addition, a minimum recall constraint of 0.65 was introduced to ensure that at least two-thirds of actual default cases are correctly identified, reflecting the importance of reducing missed risky borrowers in a credit risk context.
-
-Finally, AUC-PR (Area Under the Precision-Recall Curve) was used as a complementary evaluation metric, as it provides a more informative view of model performance under severe class imbalance.
+The key difference lies in precision throughout
+that range: XGBoost maintains consistently higher precision across all thresholds,
+with a smoother and slower decay. Logistic Regression degrades more steeply and
+erratically from the start, reflecting its weaker ability to rank positive cases
+in an imbalanced setting. At any given recall level, XGBoost generates fewer false
+positives, making it the more reliable model for risk prioritization.
 
 
 ## 🔧 5. Feature Importance
@@ -352,6 +370,8 @@ The LIME explanation corresponds to a specific instance classified as **Default*
 
 ### 5.3 SHAP
 
+####  5.3.1 SHAP Global Analysis
+
 The SHAP analysis complements gain-based importance by adding the **direction** of each variable's effect on the default probability. `weighted_late_score` again leads: high values (in red) are associated with positive SHAP values, pushing the prediction towards default, while low values reduce risk. `TotalPastDue` shows a similar pattern though with less dispersion, and `utilization_capped` also has a positive impact when elevated.
 
 A particularly relevant finding is the behaviour of `MonthlyIncome_missing`: the absence of income data generates strongly positive SHAP values (higher default risk), suggesting that the lack of income information is itself a risk signal that the model has learned to exploit. Conversely, high values of `MonthlyIncome` act as a protective factor, pushing predictions towards non-default. The variable `age` shows a moderate protective effect for older customers, consistent with the credit risk literature.
@@ -364,8 +384,19 @@ A particularly relevant finding is the behaviour of `MonthlyIncome_missing`: the
 </p>
 
 
+#### 5.3.2 SHAP Dependence Plot
 
-> All three interpretability techniques are consistent with each other and point to the same explanatory core: **late payment history and accumulated delinquency are the dominant predictors of default**, followed at a distance by credit utilisation level and the availability of income information. This coherence between global and local methods reinforces confidence in the model and facilitates its potential use in regulated environments where the explainability of credit decisions is a requirement.
+SHAP dependence plots provide a detailed view of how individual feature values influence model predictions while also revealing potential interaction effects with other variables. Each point represents an observation, where the x-axis shows the feature value and the y-axis shows its corresponding SHAP value (i.e., the contribution of that feature to the predicted probability of default). Color gradients highlight interactions with additional variables, helping to uncover relationships that may not be visible through traditional feature importance rankings.
+
+<p align="center">
+  <img src="images/shap_dependence.png" width="600"/>
+</p>
+
+The dependence plots confirm that **payment delinquency and outstanding debt are the strongest drivers of default risk**. The `weighted_late_score` feature exhibits a clear positive and non-linear relationship with its SHAP values: as the severity and frequency of late payments increase, the model assigns a substantially higher default risk, although the marginal impact gradually levels off at extreme values. A similar pattern is observed for `TotalPastDue`, where increasing amounts of overdue debt consistently raise the predicted probability of default before reaching a plateau. In contrast, `MonthlyIncome` shows a much weaker direct effect, with most observations concentrated around low SHAP values and only a limited number of extreme-income outliers. Additionally, the color distributions suggest interaction effects between delinquency-related variables and missing income information, indicating that the model relies more heavily on payment behavior than on income levels when assessing credit risk. Together, these results reinforce the importance of repayment history as the primary determinant of default predictions in the model.
+
+### 5.4 Conclusion
+
+All three interpretability techniques are consistent with each other and point to the same explanatory core: **late payment history and accumulated delinquency are the dominant predictors of default**, followed at a distance by credit utilisation level and the availability of income information. This coherence between global and local methods reinforces confidence in the model and facilitates its potential use in regulated environments where the explainability of credit decisions is a requirement.
 
 
 ## ➡️ 6. Next Steps
