@@ -32,11 +32,6 @@ Ultimately, XGBoost was selected as the final model due to its solid predictive 
 - Analysed model interpretability using SHAP and LIME, revealing that variables related to payment delinquency history and accumulated overdue events were the strongest predictors of future default risk.
 
 
-## Pipeline
-```
-Data Cleaning > EDA  ›  Feature Engineering  ›  Model Training & Evaluation  ›  Feature Importance
-```
-
 
 ## 📊 Dataset
 This project was developed using the dataset: '[Give me some credit](https://www.kaggle.com/competitions/GiveMeSomeCredit/data)'.
@@ -58,12 +53,12 @@ This dataset includes financial and behavioural information about credit applica
 
 
 
-## 🧹 1. Data Cleaning
+## 🧹 1. Data Cleaning Process
 
 In this phase, various cleaning tasks were carried out to improve the quality and consistency of the dataset, removing inconsistent records prior to modelling. Additionally, missing values present in the data were also addressed.
 
 
-### 1.1 General Cleaning
+### 1.1 Initial Data Cleaning
 
 
 - **`age` depuration:** observations with implausible ages were removed, specifically values below 18 and above 110.
@@ -73,15 +68,18 @@ In this phase, various cleaning tasks were carried out to improve the quality an
 
 ### 1.2 Missing Data
 
-The problem of missing data was then addressed. First, the affected columns were identified along with the extent of the impact.
+Missing values were analysed to assess both their distribution and potential impact on model reliability. The inspection revealed that only two variables contained missing observations: MonthlyIncome and NumberOfDependents.
 
 ![Description](images/missing_values.png)
 
-- As shown in the chart, the variables `MonthlyIncome` and `NumberOfDependents` are the only ones with missing values.
+
+Given the limited scope of missingness, variable-specific imputation strategies were applied rather than global deletion. This approach preserves data volume while avoiding the introduction of bias that could arise from removing informative observations.
+
+In particular, MonthlyIncome, a key variable in credit risk assessment, was treated carefully to ensure that imputation did not distort its distribution, while NumberOfDependents was handled using a more straightforward strategy due to its lower predictive sensitivity.
 
 #### 1.2.1 NumberOfDependents
 
-- First, the variable `NumberOfDependents` will be addressed, as it is more intuitive. To better understand it, let us look at the distribution of its values:
+First, the variable `NumberOfDependents` will be addressed, as it is more intuitive. To better understand it, let us look at the distribution of its values:
   
 Dependants | No. of clients
 -----------|---------------
@@ -99,25 +97,32 @@ Dependants | No. of clients
 13         | 1
 20         | 1
 
-- The variable's distribution shows that the vast majority of customers have between 0 and 2 dependants, concentrating most observations. Clear outliers are also identified (such as 10, 13 and 20 dependants), whose frequency is extremely low and therefore not representative of the dataset. Consequently, these outliers have been removed to avoid distortions in the analysis. For imputing missing values in the remaining observations, the mode (0) was used, as it is the most frequent and representative value of the distribution.
+The variable's distribution shows that the vast majority of customers have between 0 and 2 dependants, concentrating most observations. Clear outliers are also identified (such as 10, 13 and 20 dependants), whose frequency is extremely low and therefore not representative of the dataset. Consequently, these outliers have been removed to avoid distortions in the analysis. For imputing missing values in the remaining observations, the mode (0) was used, as it is the most frequent and representative value of the distribution.
 
-#### 1.2.2 Monthly Income
-- The variable `MonthlyIncome`, on the other hand, is more complex to handle; it presents 19.77% missing values and a right-skewed distribution with some extreme outliers.
-- The distribution of the variable segmented by the customer's default status is examined, having trimmed the most obvious outliers:
+### 1.2.2 Monthly Income
+
+`MonthlyIncome` requires a more careful treatment due to its relatively high proportion of missing values (19.77%) and its strongly right-skewed distribution, further affected by extreme outliers.
+
+The distribution of this variable, segmented by default status and after trimming extreme values, is shown below:
 
 ![Description](images/income_distr.png)
 
+A clear difference in distribution between default and non-default groups can be observed, suggesting that income contains predictive signal with respect to the target variable. For this reason, a global imputation strategy could distort this relationship and introduce bias into the model.
 
-- Since the distribution of the variable differs between individuals in default and those who are not, imputing missing values using a global measure could introduce biases and distort the relationship with the target variable. Therefore, a more robust imputation based on the median specific to each group is chosen, better preserving the real structure of the data. Additionally, a logarithmic transformation was applied, which reduces skewness and the effect of extreme values, resulting in a more stable and suitable distribution for modelling.
-  
+Missing values were therefore imputed using the median computed separately for each default class. This group-wise approach helps preserve the underlying relationship between income and default behaviour.
+
+In addition, a logarithmic transformation (`log1p`) was applied to reduce skewness and mitigate the influence of extreme values, resulting in a more stable and model-friendly distribution.
+
 ```python
-# First apply a logarithmic transformation
+# Log transformation to reduce skewness
 df["MonthlyIncome_log"] = np.log1p(df["MonthlyIncome"])
 
-# Impute with median by default group
-df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"]\
-                            .transform(lambda x: x.fillna(x.median()))
+# Group-wise median imputation by target class
+df["MonthlyIncome_log"] = df.groupby("SeriousDlqin2yrs")["MonthlyIncome_log"] \
+    .transform(lambda x: x.fillna(x.median()))
 ```
+
+
 
 
 
@@ -211,7 +216,7 @@ A borrower's history of late payments is often considered one of the most direct
 Past delinquency behavior proves to be one of the strongest indicators of future default risk. Across all three delinquency buckets — 30–59, 60–89, and 90+ days past due — defaulters show a substantially higher proportion of clients with at least one recorded delay compared to non-defaulters. The default probability curves further confirm a steep, monotonic increase with the number of delays: even a single 60–89 day late event raises the default probability to roughly 50%, and borrowers with repeated 90+ day delinquencies face default rates exceeding 65%. These patterns highlight delinquency history as a critical feature that should be prioritized in any predictive credit risk model.
 
 
-### 2.3 Analysis by Age Group
+#### 2.2.4 Analysis by Age Group
 
 This analysis explores the relationship between customers' age and their credit behaviour, focusing on default probability and different levels of delinquency. Through segmentation by age groups, the aim is to identify risk patterns that can improve the predictive capacity of the credit risk model.
   
@@ -229,7 +234,7 @@ This pattern is further confirmed by the Composite Credit Risk Index, where the 
 
 
 
-### 2.4 Correlations
+### 2.3 Correlations
 - Finally, the correlation matrix is examined with the aim of identifying which variables show the greatest association with the target variable SeriousDlqin2yrs, as well as potential multicollinearity issues between features. This analysis is particularly useful for understanding which signals provide the most predictive value and for guiding both variable selection and the construction of new transformations to improve model performance and interpretability.
   
 <p align="center">
@@ -265,23 +270,16 @@ Basic ratios such as `income_per_dependent` and `utilization_capped` adjust raw 
 
 ## 📊 4. ML Model Development
 
-As previously mentioned, the dataset presents a marked class imbalance (93% non-default / 7% default), which significantly hinders the identification of the minority class (default).
-In this context, metrics such as overall accuracy can be misleading, as a model that always predicted the majority class (non-default) would achieve 93% accuracy without providing any real value. For this reason, model optimisation focused on the F1-Score of class 1, a metric that combines precision and recall in a balanced way.
-Additionally, a minimum recall of 65% was set as a constraint, with the aim of ensuring detection of at least two thirds of real default cases.
-Finally, AUC-PR (Area Under the Precision-Recall Curve) was also considered, which is especially relevant in scenarios with strong class imbalance.
+This stage focuses on developing predictive models to estimate the probability of customer default. Given the complexity of credit risk prediction and the inherent imbalance in the dataset, the modelling approach prioritises algorithms and strategies capable of effectively capturing minority class behaviour.
 
-Several models were evaluated to address the classification problem, among which the following stand out:
+A baseline Logistic Regression model was first implemented to establish a reference performance level. Subsequently, a more advanced ensemble-based model (XGBoost) was developed to capture non-linear relationships and feature interactions that linear models may not fully represent.
 
-- Logistic Regression, used as a baseline model to establish an initial performance benchmark.
-- XGBoost, considered as a more advanced alternative with greater predictive capacity.
-- Other approaches such as LightGBM and Random Forest were also analysed; however, XGBoost was the model that achieved the best results across the evaluated metrics.
-
----
+The objective of this stage is not only to maximise predictive performance, but also to ensure that the final model provides a robust and reliable separation between default and non-default cases, suitable for real-world credit risk applications.
 
 
 ### 4.1 Logistic Regression *(baseline)*
 
-As a first step, as is common in the literature for this type of problem, a logistic regression model was fitted. Due to the class imbalance problem, the model was built with appropriately adjusted weights.
+As a first step, as is common in the literature for this type of problem, a logistic regression model was fitted. Due to the class imbalance problem, the model was trained with balanced class weights (`class_weight='balanced'`).
 
 | Metric    | Class 0 (non-default) | Class 1 (default) |
 |-----------|-----------------------|-------------------|
@@ -296,7 +294,7 @@ After evaluating multiple models, the best-performing one achieves an AUC-PR of 
 
 ### 4.2 XGBoost *(final model)*
 
-As a second approach, an XGBoost model was trained with hyperparameter tuning via randomised cross-validation (RandomCV). Compared to the baseline, it outperforms the logistic model on all relevant metrics:
+As a second approach, an XGBoost classifier was developed and optimised through randomized hyperparameter search with cross-validation. Designed to capture complex non-linear relationships in the data, the model substantially outperformed the Logistic Regression baseline across all key evaluation metrics.
 
 | Metric    | Class 0 (non-default) | Class 1 (default) |
 |-----------|-----------------------|-------------------|
@@ -307,19 +305,22 @@ As a second approach, an XGBoost model was trained with hyperparameter tuning vi
 
 This model required lowering the decision threshold to **0.3268** (well below the default 0.5) to achieve the target recall. This reflects that the model, trained on imbalanced data, tends to assign low probabilities to the minority class, and the classification threshold must be reduced to capture more real defaults.
 
-With this adjustment, the model detects **66% of real defaults** (recall), with an associated precision of 40%: that is, out of every 10 customers classified as default, 6 actually are and 4 are false alarms. This trade-off is common and generally acceptable in credit risk contexts, where the cost of missing a default far exceeds that of investigating a false alarm. The **F1-Score of 0.50** reflects this balance in a highly challenging scenario. Additionally, the model yields an AUC-PR of 0.9021.
-
----
-
-### 4.3 Comparison and Conclusion
-
-| Model                | Threshold | Precision (c1) | Recall (c1) | F1 (c1) | AUC-PR |
-|----------------------|-----------|----------------|-------------|---------|--------|
-| **XGBoost**          | 0.3268    | **0.40**       | **0.66**    | **0.50**| **0.90** |
-| Logistic Regression  | 0.5800    | 0.26           | 0.65        | 0.37    | 0.85   |
+With this adjustment, the model detects **66% of real defaults** (recall), with an associated precision of 40%: that is, out of every 10 customers classified as default, 6 actually are and 4 are false alarms. This trade-off is common and generally acceptable in credit risk contexts, where the cost of missing a default far exceeds that of investigating a false alarm. The **F1-Score of 0.50** reflects this balance in a highly challenging scenario. 
 
 The most significant improvement lies in precision (+14 p.p.), which translates into an F1-Score 35% higher (0.50 vs. 0.37) and an AUC-PR 5 points greater, while maintaining virtually identical recall. In other words, XGBoost detects the same proportion of real defaults while generating considerably fewer false alarms.
 In a credit scoring context, this difference has direct practical implications: a more refined list of at-risk customers reduces operational review costs and avoids unnecessary friction with customers who would not have defaulted. For all these reasons, XGBoost is selected as the final model for the project.
+
+
+### 4.3 Evaluation Strategy and Threshold Optimization
+
+The dataset exhibits a strong class imbalance (93% non-default vs 7% default), making accuracy an unreliable evaluation metric, as a naïve model predicting only the majority class would still achieve 93% accuracy without any predictive value.
+
+For this reason, model optimisation focused on the F1-score of the positive class (defaults), as it provides a balanced trade-off between precision and recall in imbalanced classification problems.
+
+In addition, a minimum recall constraint of 0.65 was introduced to ensure that at least two-thirds of actual default cases are correctly identified, reflecting the importance of reducing missed risky borrowers in a credit risk context.
+
+Finally, AUC-PR (Area Under the Precision-Recall Curve) was used as a complementary evaluation metric, as it provides a more informative view of model performance under severe class imbalance.
+
 
 ## 🔧 5. Feature Importance
 
@@ -369,15 +370,12 @@ A particularly relevant finding is the behaviour of `MonthlyIncome_missing`: the
 
 ## ➡️ 6. Next Steps
 
-- Expansion of the EDA.
-- More advanced balancing techniques such as SMOTE or undersampling.
-- Optimisation focused on business metrics:
-  - Recall: evaluate in monetary terms the exact degree of missed defaults.
-  - Precision: evaluate how costly it is to incur false positives.
-- Model ensembling.
-
-
----
+- **Expand exploratory data analysis (EDA)** to uncover deeper patterns and potential feature interactions not yet explored.
+- **Experiment with advanced class imbalance techniques**, such as SMOTE or undersampling strategies, to further improve minority class detection.
+- **Incorporate business-driven optimisation criteria**, translating model performance into financial impact:
+  - *Recall:* quantify the cost of missed defaults in monetary terms.
+  - *Precision:* assess the operational cost associated with false positives.
+- **Explore ensemble approaches**, combining multiple models to improve robustness and predictive performance.
 
 
 
