@@ -70,6 +70,7 @@ In this phase, various cleaning tasks were carried out to improve the quality an
 
 Missing values were analysed to assess both their distribution and potential impact on model reliability. The inspection revealed that only two variables contained missing observations: MonthlyIncome and NumberOfDependents.
 
+---
 ![Description](images/missing_values.png)
 
 
@@ -105,6 +106,7 @@ The variable's distribution shows that the vast majority of customers have betwe
 
 The distribution of this variable, segmented by default status and after trimming extreme values, is shown below:
 
+---
 ![Description](images/income_distr.png)
 
 A clear difference in distribution between default and non-default groups can be observed, suggesting that income contains predictive signal with respect to the target variable. For this reason, a global imputation strategy could distort this relationship and introduce bias into the model.
@@ -138,6 +140,7 @@ In this section, the distribution of numerical variables was analysed with the a
 This subsection explores the statistical distribution of the predictor variables. 
 To facilitate visualisation, some variables were represented with visual trimming at the 99th percentile for a cleaner display.
 
+---
 <img src="images/num_var_distribution.png" style="width: 1000px; height: auto;"/>
 
 **Main observations:**
@@ -159,6 +162,7 @@ To facilitate visualisation, some variables were represented with visual trimmin
 
 This subsection examines the distribution of the target variable, with particular attention to its class imbalance, which may have important implications for model performance.
 
+---
 <p align="center">
   <img src="images/Target_distribution.png" width="500"/>
 </p>
@@ -187,6 +191,7 @@ In addition to the analytical approach, we also estimate confidence intervals us
 
 Together, both approaches provide complementary perspectives: the Wilson interval offers a closed-form statistical estimate, while bootstrap methods provide a data-driven, assumption-light validation of uncertainty.
 
+---
 <p align="center">
   <img src="images/bootstrap_default.png" width="800"/>
 </p>
@@ -197,6 +202,7 @@ Bootstrap's approach gives us a similar 95% confidence interval of **[0.0647, 0.
 
 This section reveals clear differences between customers with and without payment default. On average, customers who do not default have higher monthly income, a slightly older age and lower debt ratios, while the default group concentrates profiles with lower income capacity and greater financial pressure. These variables show a consistent relationship with credit risk, making them particularly relevant for building predictive models aimed at estimating default probability and improving decision-making in credit granting.
 
+---
 <p align="center">
   <img src="images/feature_distr_default.png" width="800"/>
 </p>
@@ -208,6 +214,7 @@ Comparison of key financial features between defaulting and non-defaulting borro
 
 A borrower's history of late payments is often considered one of the most direct signals of future credit risk. The following analysis examines how the frequency of past delinquencies — across three severity buckets — relates to the likelihood of serious default, revealing a clear and consistent escalation in risk with each additional missed payment.
 
+---
 <p align="center">
   <img src="images/delinquency_history.png" width="800"/>
 </p>
@@ -219,13 +226,15 @@ Past delinquency behavior proves to be one of the strongest indicators of future
 #### 2.2.4 Analysis by Age Group
 
 This analysis explores the relationship between customers' age and their credit behaviour, focusing on default probability and different levels of delinquency. Through segmentation by age groups, the aim is to identify risk patterns that can improve the predictive capacity of the credit risk model.
-  
+
+---
 <p align="center">
   <img src="images/credit_behavior_age.png" width="700"/>
 </p>
 
 Analysis of default rates and delinquency patterns reveals a clear age-related trend: younger borrowers, particularly the 26–35 cohort, exhibit the highest credit risk across all metrics, including default rate (~11%), and late payment counts at every delinquency bucket (30–59, 60–89, and 90+ days). Risk decreases steadily with age, with the 65+ group showing the lowest default rate (~2.3%) and minimal delinquency counts. 
 
+---
 <p align="center">
   <img src="images/composite_risk_index.png" width="700"/>
 </p>
@@ -328,6 +337,7 @@ Both models were evaluated using the Precision-Recall curve, which is more infor
 than ROC in the presence of class imbalance, as it focuses on the model's ability to
 correctly identify the minority class.
 
+---
 <p align="center">
   <img src="images/AUC-PR_Curve.png" width="600"/>
 </p>
@@ -388,9 +398,8 @@ A particularly relevant finding is the behaviour of `MonthlyIncome_missing`: the
 
 SHAP dependence plots provide a detailed view of how individual feature values influence model predictions while also revealing potential interaction effects with other variables. Each point represents an observation, where the x-axis shows the feature value and the y-axis shows its corresponding SHAP value (i.e., the contribution of that feature to the predicted probability of default). Color gradients highlight interactions with additional variables, helping to uncover relationships that may not be visible through traditional feature importance rankings.
 
-<p align="center">
-  <img src="images/shap_dependence.png" width="600"/>
-</p>
+---
+![Description](images/shap_dependence.png)
 
 The dependence plots confirm that **payment delinquency and outstanding debt are the strongest drivers of default risk**. The `weighted_late_score` feature exhibits a clear positive and non-linear relationship with its SHAP values: as the severity and frequency of late payments increase, the model assigns a substantially higher default risk, although the marginal impact gradually levels off at extreme values. A similar pattern is observed for `TotalPastDue`, where increasing amounts of overdue debt consistently raise the predicted probability of default before reaching a plateau. In contrast, `MonthlyIncome` shows a much weaker direct effect, with most observations concentrated around low SHAP values and only a limited number of extreme-income outliers. Additionally, the color distributions suggest interaction effects between delinquency-related variables and missing income information, indicating that the model relies more heavily on payment behavior than on income levels when assessing credit risk. Together, these results reinforce the importance of repayment history as the primary determinant of default predictions in the model.
 
