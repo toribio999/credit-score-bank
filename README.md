@@ -78,7 +78,27 @@ Given the limited scope of missingness, variable-specific imputation strategies 
 
 In particular, MonthlyIncome, a key variable in credit risk assessment, was treated carefully to ensure that imputation did not distort its distribution, while NumberOfDependents was handled using a more straightforward strategy due to its lower predictive sensitivity.
 
-#### 1.2.1 NumberOfDependents
+#### 1.2.1 MAR Check
+
+To assess the missing data mechanism, a statistical association test was performed between
+each variable's missingness indicator and the target variable `SeriousDlqin2yrs`. A two-sample
+**t-test** was used for `MonthlyIncome` (continuous) and a **chi-squared test** for
+`NumberOfDependents` (discrete).
+
+| Variable | Missing | % Missing | MAR Check (t-test / χ²) | p-value | Conclusion |
+|---|---|---|---|---|---|
+| MonthlyIncome | 29,731 | 19.82% | t = 8.32 | < 0.001 | MAR |
+| NumberOfDependents | 3,924 | 2.62% | χ² = 9.14 | 0.003 | MAR |
+
+ Both variables returned statistically significant results
+(p < 0.05), indicating that missingness is systematically related to the likelihood of default.
+This rules out MCAR (Missing Completely At Random) and supports a **MAR (Missing At Random)**
+assumption, meaning imputation strategies that condition on observed variables — such as median
+imputation by risk group or model-based imputation — are appropriate.
+
+
+
+#### 1.2.2 NumberOfDependents
 
 First, the variable `NumberOfDependents` will be addressed, as it is more intuitive. To better understand it, let us look at the distribution of its values:
   
@@ -100,7 +120,7 @@ Dependants | No. of clients
 
 The variable's distribution shows that the vast majority of customers have between 0 and 2 dependants, concentrating most observations. Clear outliers are also identified (such as 10, 13 and 20 dependants), whose frequency is extremely low and therefore not representative of the dataset. Consequently, these outliers have been removed to avoid distortions in the analysis. For imputing missing values in the remaining observations, the mode (0) was used, as it is the most frequent and representative value of the distribution.
 
-### 1.2.2 Monthly Income
+#### 1.2.3 Monthly Income
 
 `MonthlyIncome` requires a more careful treatment due to its relatively high proportion of missing values (19.77%) and its strongly right-skewed distribution, further affected by extreme outliers.
 
